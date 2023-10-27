@@ -1,0 +1,9 @@
+
+Nouvelle méthode  de débruitage par seuillage basée sur la dépendance statistique des coefficients d'ondelettes.
+http://www.setit.rnu.tn/last_edition/setit2007/IV/15.pdf
+Résumé : Nous présentons dans ce papier une nouvelle méthode de débruitage par seuillage basée sur la dépendance
+statistique des coefficients d'ondelettes. La méthode proposée exploite les statistiques locales de l’image décomposée en
+sous-bandes. Notre approche s'appuie sur l'application d’un filtre filtre MAP (Maximum Posterior Estimator) de type
+bishrink adaptatif. Cette technique de débruitage est fondée sur des fenêtres de calcul de taille et de forme variable
+pour chaque pixel en fonction de l’homogénéité entre le pixel et ses voisins. Une solution analytique au problème de
+débruitage d’image pour un Bruit Blanc Gaussien Additif (BBGA) est obtenue et ses performances sont analysées
