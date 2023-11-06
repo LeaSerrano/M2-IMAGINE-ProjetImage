@@ -83,18 +83,17 @@ void bruitGaussien_G(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, in
     {
         for (int j=0; j < nW; j++) 
         {
-            //float gaussien = genererNombreGaussien(moyenne, ecartType, ImgIn[i*nW+j]);
-            float gaussien = distribution(gen);
+            float gaussien = genererNombreGaussien(moyenne, ecartType, ImgIn[i*nW+j]);
 
-            std::cout << gaussien << std::endl;
+            int val = ImgIn[i*nW+j] + gaussien;
 
-            ImgOut[i*nW+j] = ImgIn[i*nW+j] + (coefficient * gaussien);
-
-            if (ImgOut[i*nW+j] < 0) {
+            if (val < 0) {
                 ImgOut[i * nW + j] = 0;
-            } else if (ImgOut[i*nW+j] > 255) {
+            } else if (val> 255) {
                 ImgOut[i * nW + j] = 255;
             }   
+            else 
+                ImgOut[i*nW+j] = val;
         }
     }
 
@@ -124,40 +123,9 @@ void bruitGaussien_G(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, in
     return N;
 }*/
 
-void bruitPoisson_G(char *cNomImgLue, char *cNomImgLueLocation, float facteur) {
-
-    int nH, nW, nTaille;
-
-    OCTET *ImgIn, *ImgOut;
-   
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
-    nTaille = nH * nW;
-  
-    allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
-
-    allocation_tableau(ImgOut, OCTET, nTaille);
-
-        for (int i=0; i < nH; i++) 
-        {
-            for (int j=0; j < nW; j++)
-            {
-                float poisson = genererNombreGaussien(facteur, facteur, ImgIn[i*nW+j]);//genererNombrePoisson(facteur);
-
-                ImgOut[i*nW+j] = ImgIn[i*nW+j] + poisson;
-
-                if (ImgOut[i*nW+j] < 0 || ImgOut[i*nW+j] > 255) {
-                    ImgOut[i*nW+j] = ImgIn[i*nW+j];
-                }
-            }
-        }
-
-    char cNomImgEcrite[250];
-    strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Noise/Poisson/") + cNomImgLue + std::string("_Poisson__") + std::to_string(facteur).c_str() + std::string(".pgm") ).c_str());
-
-    ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
-    free(ImgIn); free(ImgOut);
-
+void bruitPoisson_G(char *cNomImgLue, char *cNomImgLueLocation, float facteur) 
+{
+    bruitGaussien_G(cNomImgLue, cNomImgLueLocation, facteur, facteur );
 }
 
 int main(int argc, char* argv[])
@@ -191,8 +159,8 @@ int main(int argc, char* argv[])
         bruitGaussien_G(cNomImgLue, cNomImgLueLocation, 0, 10);
         bruitGaussien_G(cNomImgLue, cNomImgLueLocation, 5, 10);
 
-        //bruitPoisson_G(cNomImgLue, cNomImgLueLocation, 10);
-        //bruitPoisson_G(cNomImgLue, cNomImgLueLocation, 20);
+        bruitPoisson_G(cNomImgLue, cNomImgLueLocation, 10);
+        bruitPoisson_G(cNomImgLue, cNomImgLueLocation, 20);
     }
     else {
         std::cout << "Le fichier n'est pas de type pgm" << std::endl;
