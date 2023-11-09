@@ -5,6 +5,11 @@
 #include "image_ppm.h"
 #include <random>
 #include <algorithm>
+#include <complex>
+#include <vector>
+#include <cmath>
+
+///////////////////////////////////////////////////////////////////////     AUXILIAIRE     ///////////////////////////////////////////////////////////////////////
 
 
 void get_Mean_Var( std::vector< OCTET > Arr, float& Mean, float& Var )
@@ -31,6 +36,62 @@ float clip( float n, float lower, float upper )
 {
   float min = (n < upper)?(n):(upper);
   return (lower<min)?(min):(lower);
+}
+
+// référence transformée de fourier rapide 2D : https://www.tutorialspoint.com/cplusplus-perform-to-a-2d-fft-inplace-given-a-complex-2d-array
+// idée de chat GPT
+float* FFT2D_Coeff( OCTET* ImgIn, int nH, int nW )
+{
+    int nTaille = nH * nW;
+    float nTaille_sqrt = sqrt( nTaille );
+    float PI_2 = 2. * M_PI;
+
+    float* reel = (float*) malloc( sizeof(float) * nTaille );
+    float* imag = (float*) malloc( sizeof(float) * nTaille );
+    float* ImgRed = (float*) malloc( sizeof(float) * nTaille );
+    float* coeff = (float*) malloc( sizeof(float) * nTaille );
+
+    for( int i = 0; i < nH; i++ )
+        for( int j = 0; j < nW; j++ )
+        {
+            reel[i*nW+j] = 0;
+            imag[i*nW+j] = 0;
+            ImgRed[i*nW+j] = ((float)ImgIn[i*nW+j]) / nTaille_sqrt;
+        }
+
+    float i_val, j_val, k_val, l_val;
+    i_val = j_val = k_val = l_val = 0.;
+    float i_pas = PI_2 /((float)nH);
+    float j_pas = PI_2 /((float)nW);
+
+    for( int i = 0; i < nH; i++, i_val += i_pas )
+    {
+        for( int j = 0; j < nW; j++, j_val += j_pas ) // Two outer loops iterate on output data.
+        {
+            for( int k = 0; k < nH; k++, k_val += i_val )
+            {
+                for( int l = 0; l < nW; l++, l_val += j_val ) // Two inner loops iterate on input data.
+                {
+                    float val = l_val + k_val;
+                    reel[i*nW+j] += ImgRed[k*nW+l] * cos( val );
+                    imag[i*nW+j] -= ImgRed[k*nW+l] * sin( val );
+                }
+
+                l_val = 0.;
+            }
+            
+            k_val = 0.;
+            coeff[i*nW+j] = sqrt( reel[i*nW+j] * reel[i*nW+j] + imag[i*nW+j] * imag[i*nW+j] ) / ((float)nTaille);  
+            // Output of FFT[i*nW+j] : reel[i*nW+j] + i * imag[i*nW+j] 
+        }
+
+        j_val = 0.;
+        printf("%d\n", i);
+    }
+
+    free(reel); free(imag); free(ImgRed);
+
+    return coeff;
 }
 
 ///////////////////////////////////////////////////////////////////////     MOYENNEUR     ///////////////////////////////////////////////////////////////////////
@@ -381,7 +442,7 @@ void Wiener_RGB( char *cNomImgLue, char *cNomImgLueLocation, int voisins, float 
     char cNomImgEcrite[250];
     strcpy(cNomImgEcrite, std::string(std::string("Images/Ppm/Denoise/Wiener/") + cNomImgLue + std::string("_Wiener_") + std::to_string(voisins).c_str() + std::string("_") + std::to_string(Var_Bruit).c_str() + std::string("_") + std::to_string(intensite).c_str() + std::string(".pgm") ).c_str());
 
-    ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
+    ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
@@ -441,13 +502,13 @@ void Gaussien_G( char *cNomImgLue, char *cNomImgLueLocation, int voisins, float 
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
-    int nWF = pow( voisins*2+1, 2.);
+    int nWF = voisins*2+1;
     
-    float* filter = ( float* ) malloc( sizeof(OCTET) * nWF * nWF );
+    float* filter = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
     for( int k = -voisins; k <= voisins; k++ )
         for( int l = -voisins; l <= voisins; l++ )
-            filter[(k+voisins)*voisins+(l+voisins)] = exp( - ( pow( ((float)k) - Mean, 2 ) + pow( ((float)l) - Mean, 2 ) ) / ( 2. * Var ) ) / (2. * M_PI * Var );
+            filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( ((float)k) - Mean, 2 ) + pow( ((float)l) - Mean, 2 ) ) / ( 2. * Var ) ) / (2. * M_PI * Var );
 
     for( int i = 0; i < nH; i++ ) 
         for( int j = 0; j < nW; j++ ) 
@@ -490,13 +551,13 @@ void Gaussien_RGB( char *cNomImgLue, char *cNomImgLueLocation, int voisins, floa
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
-    int nWF = pow( voisins*2+1, 2.);
-
-    float* filter = ( float* ) malloc( sizeof(OCTET) * nWF * nWF );
+    int nWF = voisins*2+1;
+    
+    float* filter = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
     for( int k = -voisins; k <= voisins; k++ )
         for( int l = -voisins; l <= voisins; l++ )
-            filter[(k+voisins)*voisins+(l+voisins)] = exp( - ( pow( ((float)k) - Mean, 2 ) + pow( ((float)l) - Mean, 2 ) ) / ( 2. * Var ) ) / (2. * M_PI * Var );
+            filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( ((float)k) - Mean, 2 ) + pow( ((float)l) - Mean, 2 ) ) / ( 2. * Var ) ) / (2. * M_PI * Var );
 
     for( int i = 0; i < nH; i++ ) 
         for( int j = 0; j < nW; j++ ) 
@@ -546,14 +607,26 @@ void Gaussien( int argc, char** argv, char* cNomImgLue, char* extension )
         exit(1);
     }
 
-    float Mean = atof( argv[4] );
+    float Mean, Var;
 
-    float Var = atof( argv[5] );
-    if( Var <= 0 )
+    if( argc >= 5 )
+        Mean = atof( argv[4] );
+    else   
+        Mean = 0.;
+
+    if( argc >= 6 )
     {
-        printf("Variance négative\n");
-        exit(1);
+        Var = atof( argv[5] );
+
+        if( Var <= 0 )
+        {
+            printf("Attention : Variance négative ou nulle( mise à 1 )\n");
+            Var = 1.;
+        }
     }
+    else   
+        Var = 1.;
+    
 
     float intensite = 1.;
     if( argc >= 7 )
@@ -577,92 +650,122 @@ void Gaussien( int argc, char** argv, char* cNomImgLue, char* extension )
         printf("Extension %s inconnue.\n", extension );
 }
 
-/* Chat GPT's version  of the wiener's filter 
+///////////////////////////////////////////////////////////////////////     WIENER AVEC FOURNIER     ///////////////////////////////////////////////////////////////////////
 
-#include <complex>
-#include <vector>
-#include <cmath>
+void Fournier_G( char *cNomImgLue, char *cNomImgLueLocation, int voisins, float Var_Bruit, float intensite ) 
+{
+    int nH, nW, nTaille;
 
-using namespace std;
+    OCTET *ImgIn, *ImgOut;
 
-// Compute the power spectrum of an image
-vector<vector<double>> power_spectrum(const vector<vector<double>>& image) {
-    int rows = image.size();
-    int cols = image[0].size();
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    nTaille = nH * nW;
 
-    // Compute the 2D FFT of the image
-    vector<vector<complex<double>>> fft_image(rows, vector<complex<double>>(cols));
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            fft_image[i][j] = complex<double>(image[i][j], 0);
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+
+    allocation_tableau(ImgOut, OCTET, nTaille);
+
+    int nWF = voisins*2+1;
+    float* coeff = FFT2D_Coeff( ImgIn, nH, nW );
+
+    float* filter = (float*) malloc( sizeof(float) * nTaille );
+    for( int i = 0; i < nH; i++ )
+        for( int j = 0; j < nW; j++ )
+        {
+            float poids = coeff[i*nW+j] / ( coeff[i*nW+j] + Var_Bruit );
+            filter[i*nW+j] = poids / ( poids + 1 );
         }
-    }
-    fft2d(fft_image);
+    
+    for( int i = 0; i < nH; i++ )
+        for( int j = 0; j < nW; j++ )
+        {
+            float somme = 0.;
+            float somme_poids = 0.;
 
-    // Compute the power spectrum of the FFT
-    vector<vector<double>> power(rows, vector<double>(cols));
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            power[i][j] = norm(fft_image[i][j]) / (rows * cols);
-        }
-    }
-
-    return power;
-}
-
-// Apply a Wiener filter to an image
-vector<vector<double>> wiener_filter(const vector<vector<double>>& image, double noise_var, int window_size) {
-    int rows = image.size();
-    int cols = image[0].size();
-
-    // Compute the power spectrum of the image
-    vector<vector<double>> power = power_spectrum(image);
-
-    // Compute the Wiener filter
-    vector<vector<double>> filter(rows, vector<double>(cols));
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            double weight = power[i][j] / (power[i][j] + noise_var);
-            filter[i][j] = weight / (1 + weight);
-        }
-    }
-
-    // Apply the Wiener filter to the image
-    vector<vector<double>> filtered_image(rows, vector<double>(cols));
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            double sum = 0;
-            double weight_sum = 0;
-            for (int k = -window_size; k <= window_size; k++) {
-                for (int l = -window_size; l <= window_size; l++) {
-                    int x = i + k;
-                    int y = j + l;
-                    if (x >= 0 && x < rows && y >= 0 && y < cols) {
-                        double weight = filter[k + window_size][l + window_size];
-                        sum += weight * image[x][y];
-                        weight_sum += weight;
+            for( int k = -voisins; k <= voisins; k++ )
+                for( int l = -voisins; l <= voisins; l++ )
+                    if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                    {
+                        float poids = filter[(k+voisins)*nWF + (l+voisins)];
+                        somme += poids * ImgIn[(i+k)*nW+(j+l)];
+                        somme_poids += poids;
                     }
-                }
-            }
-            filtered_image[i][j] = sum / weight_sum;
+
+            float old_val = ImgIn[i*nW+j];
+            float new_val = somme / somme_poids;
+            
+            ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
+
+    char cNomImgEcrite[250];
+    strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Denoise/Wiener/") + cNomImgLue + std::string("_Fournier_Wiener_") + std::to_string(voisins).c_str() + std::string("_") + std::to_string(Var_Bruit).c_str() + std::string("_") + std::to_string(intensite).c_str() + std::string(".pgm") ).c_str());
+
+    ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
+    free(ImgIn); free(ImgOut); free(coeff); free(filter);
+}
+
+void Fournier( int argc, char** argv, char* cNomImgLue, char* extension )
+{   
+    char cNomImgLueLocation[256];
+
+    int voisins = atoi( argv[3] );
+    if( voisins <= 0 )
+    {
+        printf("Nombre de voisins négatifs\n");
+        exit(1);
     }
 
-    return filtered_image;
-}
-*/
+    float Var_Bruit = atof( argv[4] );
+    if( Var_Bruit <= 0 )
+    {
+        printf("Variance négative\n");
+        exit(1);
+    }
 
-#define MOYENNEUR 0
-#define MEDIAN 1
-#define WIENER 2
-#define GAUSSIEN 3
-#define ALL_FILTERS 4
+    float intensite = 1.;
+    if( argc >= 6 )
+    {
+        intensite = atof( argv[5] );
+        if( intensite < 0 ) intensite = 0.;
+        if( intensite > 1 ) intensite = 1.;
+    }
+
+    if( strcmp( extension, "pgm" ) == 0 ) 
+    {
+        strcpy(cNomImgLueLocation, std::string(std::string("Images/Pgm/") + cNomImgLue + std::string(".") + extension ).c_str());
+        Fournier_G( cNomImgLue, cNomImgLueLocation, voisins, Var_Bruit, intensite );
+    }
+    else if( strcmp( extension, "ppm" ) == 0 ) 
+    {
+        strcpy(cNomImgLueLocation, std::string(std::string("Images/Ppm/") + cNomImgLue + std::string(".") + extension ).c_str());
+        //Fournier_RGB( cNomImgLue, cNomImgLueLocation, voisins, Var_Bruit, intensite );
+    }
+    else   
+        printf("Extension %s inconnue.\n", extension );
+}
+
+///////////////////////////////////////////////////////////////////////     MAIN     ///////////////////////////////////////////////////////////////////////
+
+enum FILTER
+{
+    MOYENNEUR,
+    MEDIAN, 
+    WIENER,
+    FOURNIER,
+    GAUSSIEN,
+    NB_FILTERS
+};
+
+void (*filter_functions[NB_FILTERS]) ( int, char**, char*, char* ) = { Moyenneur, Median, Wiener, Fournier, Gaussien };
+
+char* TAG[NB_FILTERS] = { (char*) "MOY", (char*) "MED", (char*) "WIE", (char*) "FOU", (char*) "GAU" };
 
 int getMode( char* modeStr, int argc )
 {
     int mode = 0;
 
-    if( modeStr[0] == 'M' && modeStr[1] == 'O' && modeStr[2] == 'Y' )
+    if( !strcmp( modeStr, TAG[MOYENNEUR] ) )
     {
         if( argc < 4 )
         {
@@ -672,7 +775,7 @@ int getMode( char* modeStr, int argc )
 
         mode = MOYENNEUR;
     }
-    else if( modeStr[0] == 'M' && modeStr[1] == 'E' && modeStr[2] == 'D' )
+    else if( !strcmp( modeStr, TAG[MEDIAN] ) )
     {
         if( argc < 4 )
         {
@@ -682,7 +785,7 @@ int getMode( char* modeStr, int argc )
 
         mode = MEDIAN;
     }
-    else if( modeStr[0] == 'W' && modeStr[1] == 'I' && modeStr[2] == 'E' )
+    else if( !strcmp( modeStr, TAG[WIENER] ))
     {
         if( argc < 5 )
         {
@@ -692,9 +795,20 @@ int getMode( char* modeStr, int argc )
 
         mode = WIENER;
     }
-    else if( modeStr[0] == 'G' && modeStr[1] == 'A' && modeStr[2] == 'U' )
+    else if( !strcmp( modeStr, TAG[FOURNIER] ) )
     {
-        if( argc < 6 )
+        if( argc < 5 )
+        {
+            printf("Usage: ImageIn FOU #voisins variance_bruit intensité( entre 0 et 1 )\n"); 
+            exit(1);
+        }
+
+        printf("Attention : cette méthode est longue et inefficace\n");
+        mode = FOURNIER;
+    }
+    else if( !strcmp( modeStr, TAG[GAUSSIEN] ) )
+    {
+        if( argc < 4 )
         {
             printf("Usage: ImageIn GAU #voisins moyenne variance intensité( entre 0 et 1 )\n"); 
             exit(1);
@@ -715,9 +829,14 @@ int main(int argc, char* argv[])
 {
     char cNomImgLue[250];
 
-    if (argc < 3 ) 
+    if( argc < 3 ) 
     {
-        printf("Usage: ImageIn Mode_Débruitage\n"); 
+        printf("Usage: ImageIn Mode_Débruitage\n"
+                       "MOY : filtre moyenneur ( args : #voisins intensite? )\n"
+                       "MED : filtre médian ( args : #voisins intensite? )\n"
+                       "WIE : filtre de Wiener ( args : #voisins variance_du_bruit intensite? )\n"
+                       "FOU : filtre de Wiener avec une transformation de fournier ( à éviter, compiler avec -O3 )\n"
+                       "GAU : filtre gaussien ( args : #voisins moyenne? variance? intensite? )\n"); 
         exit(1);
     }
     else if( strlen( argv[2] ) != 3 )
@@ -737,20 +856,7 @@ int main(int argc, char* argv[])
 
     cNomImgLue[longueur - 4] = '\0';
 
-    switch( mode )
-    {
-        case MOYENNEUR : Moyenneur( argc, argv, cNomImgLue, cDernieresLettres ); break;
-        case MEDIAN : Median( argc, argv, cNomImgLue, cDernieresLettres ); break;
-        case WIENER : Wiener( argc, argv, cNomImgLue, cDernieresLettres ); break;
-        case GAUSSIEN : Gaussien( argc, argv, cNomImgLue, cDernieresLettres ); break;
-        default : printf("Mode inconnu\n");
-                    break;
-    }
-
-    if(1)
-        std::cout << "Done" << "\n";
-    else 
-        std::cout << "Le fichier n'est pas de type pgm ou ppm" << std::endl;
+    (*filter_functions[mode])( argc, argv, cNomImgLue, cDernieresLettres );
 
     return 0;
 }
