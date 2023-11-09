@@ -42,7 +42,6 @@ void bruitPoivreEtSel_G(char *cNomImgLue, char *cNomImgLueLocation, float propor
 
   ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
   free(ImgIn); free(ImgOut);
-
 }
 
 float genererNombreGaussien(int moyenne, int ecartType, int p) {
