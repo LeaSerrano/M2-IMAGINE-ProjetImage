@@ -26,7 +26,7 @@ void get_Mean_Var( std::vector< OCTET > Arr, float& Mean, float& Var )
     for( uint i = 0; i < Arr.size(); i++ )
         var += pow( Arr[i] - mean, 2. );
 
-    var = sqrt( var / (float) ( Arr.size() - 1 ) );
+    var = var / (float) ( Arr.size() - 1 );
 
     Mean = mean;
     Var = var;
@@ -687,7 +687,7 @@ void Fournier_G( char *cNomImgLue, char *cNomImgLueLocation, int voisins, float 
                 for( int l = -voisins; l <= voisins; l++ )
                     if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
                     {
-                        float poids = filter[(k+voisins)*nWF + (l+voisins)];
+                        float poids = filter[(i+k)*nW+(j+l)];
                         somme += poids * ImgIn[(i+k)*nW+(j+l)];
                         somme_poids += poids;
                     }
