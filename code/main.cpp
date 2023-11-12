@@ -445,6 +445,89 @@ void bruitSpeckle(char *cNomImgLue, char *cNomImgLueLocation, int intensite, boo
     free(ImgIn); free(ImgOut);
 }
 
+
+void extrairePatch(OCTET *ImgIn, OCTET *ImgOut, int y, int x, int tailleFenetre, int nW) {
+    int m = tailleFenetre / 2;
+
+    for (int j = -m; j <= m; ++j) {
+        for (int i = -m; i <= m; ++i) {
+            ImgOut[(j + m) * tailleFenetre + (i + m)] = ImgIn[(y + j) * nW + (x + i)];
+        }
+    }
+}
+
+
+double calculerMesureSimilarite(OCTET* patch1, OCTET* patch2, int tailleFenetre) {
+    double sum = 0;
+
+    for(int i = 0; i < tailleFenetre * tailleFenetre; i++) {
+        sum += pow(patch1[i] - patch2[i], 2);
+    }
+
+    return sum;
+}
+
+double calculerPoids(double mesureSimilarite, double sigma, double h) {
+    return exp(-(mesureSimilarite * mesureSimilarite) / (sigma * sigma * h * h));
+
+}
+
+void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, double h, int tailleFenetre) {
+
+    int nH, nW, nTaille, nTaille3;
+    std::string folder, extension;
+
+    OCTET *ImgIn, *ImgOut;
+
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+
+    nTaille = nH * nW;
+
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+
+    allocation_tableau(ImgOut, OCTET, nTaille);
+
+     OCTET *patchActuel;
+    allocation_tableau(patchActuel, OCTET, tailleFenetre * tailleFenetre);
+    
+    OCTET *patchVoisin;
+    allocation_tableau(patchVoisin, OCTET, tailleFenetre * tailleFenetre);
+
+    int m = tailleFenetre/2;
+
+    for (int y = m; y < nH - m; ++y) {
+        for (int x = m; x < nW - m; ++x) {
+            double sommePoids = 0.0;
+            double sommePoidsValeurs = 0.0;
+
+            extrairePatch(ImgIn, patchActuel, y, x, tailleFenetre, nW);
+
+            for (int j = -m; j <= m; ++j) {
+                for (int i = -m; i <= m; ++i) {
+                    extrairePatch(ImgIn, patchVoisin, y + j, x + i, tailleFenetre, nW);
+
+                    double mesureSimilarite = calculerMesureSimilarite(patchActuel, patchVoisin, nTaille);
+                    double poids = calculerPoids(mesureSimilarite, sigma, h);
+
+                    sommePoids += poids;
+                    sommePoidsValeurs += poids * ImgIn[(y + j) * nW + (x + i)];
+                }
+            }
+
+            ImgOut[y * nW + x] = sommePoidsValeurs / sommePoids;
+
+        }
+    }
+
+    char cNomImgEcrite[250];
+    
+    strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Denoise/NonLocalMeans/") + cNomImgLue + std::string("_NonLocalMeans_") + std::to_string(sigma).c_str() + std::string("_") + std::to_string(h).c_str() + std::string("_") + std::to_string(tailleFenetre).c_str() + std::string(".pgm")).c_str());
+
+    ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
+
+}
+
 int main(int argc, char* argv[])
 {
   char cNomImgLue[250];
@@ -463,6 +546,7 @@ int main(int argc, char* argv[])
     strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
 
     if (strcmp(cDernieresLettres, "pgm") == 0) {
+
         char cNomImgLueLocation[250];
         strcpy(cNomImgLueLocation, std::string(std::string("Images/Pgm/") + cNomImgLue).c_str());
 
@@ -487,6 +571,23 @@ int main(int argc, char* argv[])
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 25, true);
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 50, true);
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 100, true);
+        bruitSpeckle(cNomImgLue, cNomImgLueLocation, 200, true);
+
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 10, 10, 2);
+
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 10, 10, 2);
+
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 10, 10, 2);
+
     }
     else {
         char cNomImgLueLocation[250];
@@ -513,6 +614,7 @@ int main(int argc, char* argv[])
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 25, false);
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 50, false);
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 100, false);
+        bruitSpeckle(cNomImgLue, cNomImgLueLocation, 200, false);
     }
 
    return 1;
