@@ -521,12 +521,10 @@ void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, 
     }
 
     char cNomImgEcrite[250];
-
-    //std::cout << cNomImgLue << " " << cNomImgLueLocation << std::endl;
     
-    //strcpy(cNomImgEcrite, std::string(cNomImgLue + std::string("_NonLocalMeans.pgm")).c_str());
+    strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Denoise/NonLocalMeans/") + cNomImgLue + std::string("_NonLocalMeans_") + std::to_string(sigma).c_str() + std::string("_") + std::to_string(h).c_str() + std::string("_") + std::to_string(tailleFenetre).c_str() + std::string(".pgm")).c_str());
 
-    ecrire_image_pgm("NonLocalMeans.pgm", ImgOut, nH, nW);
+    ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
 
 }
 
@@ -575,7 +573,20 @@ int main(int argc, char* argv[])
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 100, true);
         bruitSpeckle(cNomImgLue, cNomImgLueLocation, 200, true);
 
-        //nlMeansDenoising("citrouilles_PoivreEtSel_0.100000.pgm", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 10, 10, 2);
+
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 10, 10, 2);
+
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 10, 10, 2);
 
     }
     else {
