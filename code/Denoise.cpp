@@ -740,7 +740,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
         for (int j = 0; j < nW-1; j++) 
         {
             float val = sqrt( pow( ImgIn[(i+1)*nW+j]- ImgIn[i*nW+j] , 2 ) + pow( ImgIn[i*nW+j]- ImgIn[i*nW+j+1], 2 ) );
-            ImgGrad[i*nW+j] = (val<Seuil)?(0):(255);
+            ImgGrad[i*nW+j] = (val<(float)Seuil)?(0):(255);
         }
     
     
@@ -759,22 +759,22 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
                 int cur_i = visited[k];
                 int cur_j = visited[k+1];
 
-                if( cur_i <= i + voisins && cur_i + 1 < nH && ImgGrad[(cur_i + 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i+1, cur_j ) )
+                if( cur_i + 1 <= i + voisins && cur_i + 1 < nH && ImgGrad[(cur_i + 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i+1, cur_j ) )
                 {
                     visited.push_back( cur_i + 1 );
                     visited.push_back( cur_j );
                 }
-                if( cur_i >= i - voisins && cur_i - 1 >= 0 && ImgGrad[(cur_i - 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i-1, cur_j ) )
+                if( cur_i - 1 >= i - voisins && cur_i - 1 >= 0 && ImgGrad[(cur_i - 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i-1, cur_j ) )
                 {
                     visited.push_back( cur_i - 1 );
                     visited.push_back( cur_j );
                 }
-                if( cur_j <= j + voisins && cur_j + 1 < nW && ImgGrad[cur_i*nW+cur_j+1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j+1 ) )
+                if( cur_j + 1 <= j + voisins && cur_j + 1 < nW && ImgGrad[cur_i*nW+cur_j+1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j+1 ) )
                 {
                     visited.push_back( cur_i );
                     visited.push_back( cur_j + 1);
                 }
-                if( cur_j >= j - voisins && cur_j - 1 >= 0 && ImgGrad[cur_i*nW+cur_j-1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j-1 ) )
+                if( cur_j - 1 >= j - voisins && cur_j - 1 >= 0 && ImgGrad[cur_i*nW+cur_j-1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j-1 ) )
                 {
                     visited.push_back( cur_i );
                     visited.push_back( cur_j - 1 );
@@ -1045,5 +1045,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
-// jurenoult@gmail.com
