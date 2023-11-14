@@ -4,6 +4,54 @@
 #include <iostream>
 #include "image_ppm.h"
 #include <random>
+#include "Mesure.cpp"
+#include <fstream>
+#include <ctime>
+
+void calculDistributionGaussienne(const std::vector<float>& distribution, int moyenne, int ecartType, int nTaille) {
+
+    std::ofstream fichier(std::string(std::string("Images/Statistiques/donnees_gaussiennes_") + std::to_string(moyenne).c_str() + std::string("_") + std::to_string(ecartType).c_str() + std::string(".dat")).c_str());
+    for (int i = 0; i < nTaille; ++i) {
+        fichier << distribution[i] << std::endl;
+    }
+    fichier.close();
+
+    std::ofstream gnuplotScript("Images/Statistiques/plot_histo.gnu");
+    gnuplotScript << "set terminal png\n";
+    gnuplotScript << "set output '" << "Images/Statistiques/donnees_gaussiennes_" << moyenne << "_" << ecartType << ".png'\n";
+    gnuplotScript << "set title 'Distribution Gaussienne (Moyenne: " << moyenne << ", Écart-type: " << ecartType << ")'\n";
+    gnuplotScript << "set xlabel 'Valeurs'\n";
+    gnuplotScript << "set ylabel 'Fréquence'\n";
+    gnuplotScript << "binwidth = 1\n";
+    gnuplotScript << "bin(x, width) = width*floor(x/width)\n";
+    gnuplotScript << "plot '" << "Images/Statistiques/donnees_gaussiennes_" << moyenne << "_" << ecartType << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with boxes\n";
+    gnuplotScript.close();
+
+    system("gnuplot -p Images/Statistiques/plot_histo.gnu");
+}
+
+void calculDistributionPoisson(const std::vector<float>& distribution, int lambda, int nTaille) {
+
+    std::ofstream fichier(std::string(std::string("Images/Statistiques/donnees_poisson_") + std::to_string(lambda).c_str() + std::string(".dat")).c_str());
+    for (int i = 0; i < nTaille; ++i) {
+        fichier << distribution[i] << std::endl;
+    }
+    fichier.close();
+
+    std::ofstream gnuplotScript("Images/Statistiques/plot_histo.gnu");
+    gnuplotScript << "set terminal png\n";
+    gnuplotScript << "set output '" << "Images/Statistiques/donnees_poisson_" << lambda << ".png'\n";
+    gnuplotScript << "set title 'Distribution de Poisson (Lambda: " << lambda << ")'\n";
+    gnuplotScript << "set xlabel 'Valeurs'\n";
+    gnuplotScript << "set ylabel 'Fréquence'\n";
+    gnuplotScript << "binwidth = 1\n";
+    gnuplotScript << "bin(x, width) = width*floor(x/width)\n";
+    gnuplotScript << "plot '" << "Images/Statistiques/donnees_poisson_" << lambda << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with boxes\n";
+    gnuplotScript.close();
+
+    system("gnuplot -p Images/Statistiques/plot_histo.gnu");
+}
+
 
 void calculBruitPoivreEtSel(OCTET *ImgIn, OCTET *ImgOut, int nW, int nH, float proportion) {
     srand(time(NULL));
@@ -95,6 +143,8 @@ void bruitPoivreEtSel(char *cNomImgLue, char *cNomImgLueLocation, float proporti
         extension = "ppm";
     }
 
+    std::cout << "PSNR image poivre et sel : " << calculPSNR(ImgOut, ImgIn, nTaille) << std::endl;
+
     char cNomImgEcrite[250];
     strcpy(cNomImgEcrite, std::string(std::string("Images/") + folder + std::string("/Noise/Salt_and_Pepper/") + cNomImgLue + std::string("_PoivreEtSel_") + std::to_string(proportion).c_str() + std::string(".") + extension).c_str());
 
@@ -108,7 +158,7 @@ void bruitPoivreEtSel(char *cNomImgLue, char *cNomImgLueLocation, float proporti
     free(ImgIn); free(ImgOut);
 }
 
-float genererNombreGaussien(int moyenne, int ecartType, int p) {
+float genererNombreGaussien(int moyenne, int ecartType) {
 
     float nb1 = (float)(rand())/(float)(RAND_MAX);
     float nb2 = (float)(rand())/(float)(RAND_MAX);
@@ -118,28 +168,61 @@ float genererNombreGaussien(int moyenne, int ecartType, int p) {
     return (float)(z * ecartType + moyenne);
 }
 
-void calculBruitGaussien(OCTET *ImgIn, OCTET *ImgOut, int nW, int nH, float moyenne, float ecartType) {
+int genererBruitPoisson(float moyenne) {
+    float L = exp(-moyenne);
+    int k = 0;
+    float p = 1.0;
+
+    do {
+        k++;
+        float u = (float)(rand()) / (float)(RAND_MAX);
+        p *= u;
+    } while (p > L);
+
+    return k - 1;
+}
+
+void calculBruitGaussien(OCTET *ImgIn, OCTET *ImgOut, int nW, int nH, float moyenne, float ecartType, std::vector<float> &distribution, std::string name) {
+
+    distribution.clear();
+    std::srand(std::time(0));
 
     for (int i=0; i < nH; i++) 
     {
         for (int j=0; j < nW; j++) 
         {
-            float gaussien = genererNombreGaussien(moyenne, ecartType, ImgIn[i*nW+j]);
 
-            int val = ImgIn[i*nW+j] + gaussien;
+            float gaussien;
+            float poisson;
+            float val;
+
+            gaussien = genererNombreGaussien(moyenne, ecartType);
+
+            if (name == "Gaussian") {
+                val = ImgIn[i*nW+j] + gaussien;
+                distribution.push_back(gaussien);
+            }
+            else if (name == "Poisson") {
+                poisson = genererBruitPoisson(moyenne);
+
+                val = ImgIn[i*nW+j] + poisson;
+
+                distribution.push_back(poisson);
+            }
 
             if (val < 0) {
                 ImgOut[i * nW + j] = 0;
             } else if (val> 255) {
                 ImgOut[i * nW + j] = 255;
             }   
-            else 
+            else {
                 ImgOut[i*nW+j] = val;
+            }
         }
     }
 }
 
-void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, int ecartType, std::string name, bool estImgGrise) {
+void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, float moyenne, float ecartType, std::string name, bool estImgGrise) {
 
     int nH, nW, nTaille, nTaille3;
     std::string folder, extension;
@@ -156,7 +239,16 @@ void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, int 
 
         allocation_tableau(ImgOut, OCTET, nTaille);
 
-        calculBruitGaussien(ImgIn, ImgOut, nW, nH, moyenne, ecartType);
+        std::vector<float> distribution;
+        calculBruitGaussien(ImgIn, ImgOut, nW, nH, moyenne, ecartType, distribution, name);
+
+        if (name == "Gaussian") {
+            calculDistributionGaussienne(distribution, moyenne, ecartType, nTaille);
+        }
+        else if (name == "Poisson") {
+            calculDistributionPoisson(distribution, moyenne, nTaille);
+        }
+
     }
     else {
         lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
@@ -186,9 +278,12 @@ void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, int 
         allocation_tableau(traitementG, OCTET, nTaille);
         allocation_tableau(traitementB, OCTET, nTaille);
     
-        calculBruitGaussien(tabIdR, traitementR, nW, nH, moyenne, ecartType);
-        calculBruitGaussien(tabIdG, traitementG, nW, nH, moyenne, ecartType);
-        calculBruitGaussien(tabIdB, traitementB, nW, nH, moyenne, ecartType);
+        std::vector<float> distributionR;
+        std::vector<float> distributionG;
+        std::vector<float> distributionB;
+        calculBruitGaussien(tabIdR, traitementR, nW, nH, moyenne, ecartType, distributionR, name);
+        calculBruitGaussien(tabIdG, traitementG, nW, nH, moyenne, ecartType, distributionG, name);
+        calculBruitGaussien(tabIdB, traitementB, nW, nH, moyenne, ecartType, distributionB, name);
 
         for (int elt=0; elt < nTaille3; elt+=3)
         {
@@ -210,6 +305,11 @@ void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, int 
         extension = "ppm";
     }
 
+    std::cout << "PSNR gaussien : " << calculPSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SNR gaussien : " << calculSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SSIM gaussien : " << calculSSIM(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "RMSE gaussien : " << calculRMSE(ImgIn, ImgOut, nTaille) << std::endl;
+
     char cNomImgEcrite[250];
     
     strcpy(cNomImgEcrite, std::string(std::string("Images/") + folder + std::string("/Noise/") + name + std::string("/") + cNomImgLue + std::string("_") + name + std::string("_") + std::to_string(moyenne).c_str() + std::string("_") + std::to_string(ecartType).c_str() + std::string(".") + extension).c_str());
@@ -220,6 +320,7 @@ void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, int moyenne, int 
     else {
         ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     }
+
 
     free(ImgIn); free(ImgOut);
     
@@ -446,31 +547,39 @@ void bruitSpeckle(char *cNomImgLue, char *cNomImgLueLocation, int intensite, boo
 }
 
 
-void extrairePatch(OCTET *ImgIn, OCTET *ImgOut, int y, int x, int tailleFenetre, int nW) {
+void extrairePatch(OCTET *ImgIn, OCTET *ImgOut, int y, int x, int tailleFenetre, int nW, int nH) {
     int m = tailleFenetre / 2;
 
     for (int j = -m; j <= m; ++j) {
         for (int i = -m; i <= m; ++i) {
-            ImgOut[(j + m) * tailleFenetre + (i + m)] = ImgIn[(y + j) * nW + (x + i)];
+            int newY = y + j;
+            int newX = x + i;
+
+            if (newY >= 0 && newY < nH && newX >= 0 && newX < nW) {
+                ImgOut[(j + m) * tailleFenetre + (i + m)] = ImgIn[newY * nW + newX];
+            }
         }
     }
 }
 
 
-double calculerMesureSimilarite(OCTET* patch1, OCTET* patch2, int tailleFenetre) {
+double calculerMesureSimilarite(OCTET* patch1, OCTET* patch2, int tailleFenetre, double sigma) {
     double sum = 0;
 
     for(int i = 0; i < tailleFenetre * tailleFenetre; i++) {
-        sum += pow(patch1[i] - patch2[i], 2);
+        sum += exp(-(patch1[i] - patch2[i]) * (patch1[i] - patch2[i]) / (2 * sigma * sigma));
     }
 
     return sum;
 }
 
-double calculerPoids(double mesureSimilarite, double sigma, double h) {
-    return exp(-(mesureSimilarite * mesureSimilarite) / (sigma * sigma * h * h));
 
+double calculerPoids(double mesureSimilarite, double sigma, double h) {
+    double denom = sigma * sigma * h * h;
+    return (denom != 0.0) ? exp(-mesureSimilarite / denom) : 0.0;
 }
+
+
 
 void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, double h, int tailleFenetre) {
 
@@ -501,13 +610,13 @@ void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, 
             double sommePoids = 0.0;
             double sommePoidsValeurs = 0.0;
 
-            extrairePatch(ImgIn, patchActuel, y, x, tailleFenetre, nW);
+            extrairePatch(ImgIn, patchActuel, y, x, tailleFenetre, nW, nH);
 
             for (int j = -m; j <= m; ++j) {
                 for (int i = -m; i <= m; ++i) {
-                    extrairePatch(ImgIn, patchVoisin, y + j, x + i, tailleFenetre, nW);
+                    extrairePatch(ImgIn, patchVoisin, y + j, x + i, tailleFenetre, nW, nH);
 
-                    double mesureSimilarite = calculerMesureSimilarite(patchActuel, patchVoisin, nTaille);
+                    double mesureSimilarite = calculerMesureSimilarite(patchActuel, patchVoisin, tailleFenetre, sigma);
                     double poids = calculerPoids(mesureSimilarite, sigma, h);
 
                     sommePoids += poids;
@@ -521,6 +630,11 @@ void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, 
     }
 
     char cNomImgEcrite[250];
+
+    std::cout << "PSNR non local means : " << calculPSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SNR non local means : " << calculSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SSIM non local means : " << calculSSIM(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "RMSE non local means : " << calculRMSE(ImgIn, ImgOut, nTaille) << std::endl;
     
     strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Denoise/NonLocalMeans/") + cNomImgLue + std::string("_NonLocalMeans_") + std::to_string(sigma).c_str() + std::string("_") + std::to_string(h).c_str() + std::string("_") + std::to_string(tailleFenetre).c_str() + std::string(".pgm")).c_str());
 
@@ -552,14 +666,15 @@ int main(int argc, char* argv[])
 
         cNomImgLue[longueur - 4] = '\0';
 
-        bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.05, true);
+        /*bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.05, true);
         bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.1, true);
         bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.25, true);
         
-        bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 25, "Gaussian", true);
+        bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 25, "Gaussian", true);*/
         bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 10, "Gaussian", true);
-        bruitGaussien(cNomImgLue, cNomImgLueLocation, 5, 10, "Gaussian", true);
+        /*bruitGaussien(cNomImgLue, cNomImgLueLocation, 5, 10, "Gaussian", true);
 
+        bruitPoisson(cNomImgLue, cNomImgLueLocation, 1, "Poisson", true);
         bruitPoisson(cNomImgLue, cNomImgLueLocation, 10, "Poisson", true);
         bruitPoisson(cNomImgLue, cNomImgLueLocation, 20, "Poisson", true);
 
@@ -576,17 +691,17 @@ int main(int argc, char* argv[])
         nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 10, 2);
         nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 2);
         nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 4);
-        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 10, 10, 2);
+        nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.1, 36, 2);
 
-        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 10, 2);
-        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 2);
-        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 0.05, 30, 4);
-        nlMeansDenoising("citrouilles_Gaussian_0_25", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_25.pgm", 10, 10, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 10, 2);*/
+        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 30, 2);
+        /*nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.1, 10, 2);
 
-        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 10, 2);
-        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 2);
-        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 0.05, 30, 4);
-        nlMeansDenoising("citrouilles_Impulsif_50", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_50.pgm", 10, 10, 2);
+        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 30, 2);
+        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 30, 4);
+        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.1, 10, 2);*/
 
     }
     else {
