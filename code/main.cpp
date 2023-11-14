@@ -4,7 +4,7 @@
 #include <iostream>
 #include "image_ppm.h"
 #include <random>
-#include "PSNR.cpp"
+#include "Mesure.cpp"
 #include <fstream>
 #include <ctime>
 
@@ -24,7 +24,7 @@ void calculDistributionGaussienne(const std::vector<float>& distribution, int mo
     gnuplotScript << "set ylabel 'Fréquence'\n";
     gnuplotScript << "binwidth = 1\n";
     gnuplotScript << "bin(x, width) = width*floor(x/width)\n";
-    gnuplotScript << "plot '" << "Images/Statistiques/donnees_gaussiennes_" << moyenne << "_" << ecartType << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with lines\n";
+    gnuplotScript << "plot '" << "Images/Statistiques/donnees_gaussiennes_" << moyenne << "_" << ecartType << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with boxes\n";
     gnuplotScript.close();
 
     system("gnuplot -p Images/Statistiques/plot_histo.gnu");
@@ -46,7 +46,7 @@ void calculDistributionPoisson(const std::vector<float>& distribution, int lambd
     gnuplotScript << "set ylabel 'Fréquence'\n";
     gnuplotScript << "binwidth = 1\n";
     gnuplotScript << "bin(x, width) = width*floor(x/width)\n";
-    gnuplotScript << "plot '" << "Images/Statistiques/donnees_poisson_" << lambda << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with lines\n";
+    gnuplotScript << "plot '" << "Images/Statistiques/donnees_poisson_" << lambda << ".dat' using (bin($1, binwidth)):(1.0) smooth freq with boxes\n";
     gnuplotScript.close();
 
     system("gnuplot -p Images/Statistiques/plot_histo.gnu");
@@ -306,6 +306,9 @@ void bruitGaussien(char *cNomImgLue, char *cNomImgLueLocation, float moyenne, fl
     }
 
     std::cout << "PSNR gaussien : " << calculPSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SNR gaussien : " << calculSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SSIM gaussien : " << calculSSIM(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "RMSE gaussien : " << calculRMSE(ImgIn, ImgOut, nTaille) << std::endl;
 
     char cNomImgEcrite[250];
     
@@ -629,6 +632,9 @@ void nlMeansDenoising(char *cNomImgLue, char *cNomImgLueLocation, double sigma, 
     char cNomImgEcrite[250];
 
     std::cout << "PSNR non local means : " << calculPSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SNR non local means : " << calculSNR(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "SSIM non local means : " << calculSSIM(ImgIn, ImgOut, nTaille) << std::endl;
+    std::cout << "RMSE non local means : " << calculRMSE(ImgIn, ImgOut, nTaille) << std::endl;
     
     strcpy(cNomImgEcrite, std::string(std::string("Images/Pgm/Denoise/NonLocalMeans/") + cNomImgLue + std::string("_NonLocalMeans_") + std::to_string(sigma).c_str() + std::string("_") + std::to_string(h).c_str() + std::string("_") + std::to_string(tailleFenetre).c_str() + std::string(".pgm")).c_str());
 
@@ -660,13 +666,13 @@ int main(int argc, char* argv[])
 
         cNomImgLue[longueur - 4] = '\0';
 
-        bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.05, true);
+        /*bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.05, true);
         bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.1, true);
         bruitPoivreEtSel(cNomImgLue, cNomImgLueLocation, 0.25, true);
         
-        bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 25, "Gaussian", true);
+        bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 25, "Gaussian", true);*/
         bruitGaussien(cNomImgLue, cNomImgLueLocation, 0, 10, "Gaussian", true);
-        bruitGaussien(cNomImgLue, cNomImgLueLocation, 5, 10, "Gaussian", true);
+        /*bruitGaussien(cNomImgLue, cNomImgLueLocation, 5, 10, "Gaussian", true);
 
         bruitPoisson(cNomImgLue, cNomImgLueLocation, 1, "Poisson", true);
         bruitPoisson(cNomImgLue, cNomImgLueLocation, 10, "Poisson", true);
@@ -687,15 +693,15 @@ int main(int argc, char* argv[])
         nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.05, 30, 4);
         nlMeansDenoising("citrouilles_PoivreEtSel_0.100000", "Images/Pgm/Noise/Salt_and_Pepper/citrouilles_PoivreEtSel_0.100000.pgm", 0.1, 36, 2);
 
-        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 10, 2);
+        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 10, 2);*/
         nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 30, 2);
-        nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 30, 4);
+        /*nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.05, 30, 4);
         nlMeansDenoising("citrouilles_Gaussian_0_10", "Images/Pgm/Noise/Gaussian/citrouilles_Gaussian_0_10.pgm", 0.1, 10, 2);
 
         nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 10, 2);
         nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 30, 2);
         nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.05, 30, 4);
-        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.1, 10, 2);
+        nlMeansDenoising("citrouilles_Impulsif_25", "Images/Pgm/Noise/Impulsif/citrouilles_Impulsif_25.pgm", 0.1, 10, 2);*/
 
     }
     else {
