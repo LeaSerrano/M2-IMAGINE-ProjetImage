@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include "image_ppm.h"
 
 
 //PSNR
@@ -104,4 +105,117 @@ float calculRMSE(OCTET *ImgIn, OCTET *ImgIn2, int nTaille) {
     float rmse = sqrt(sommeCarresErreurs / nTaille);
 
     return rmse;
+}
+
+enum MEASURES
+{
+    PSNR,
+    SNR, 
+    SSIM, 
+    RMSE, 
+    NB_MEASURES
+};
+
+float (*measure_functions[NB_MEASURES]) ( OCTET*, OCTET*, int ) = { calculPSNR, calculSNR, calculSSIM, calculRMSE };
+
+char* TAG[NB_MEASURES] = { (char*) "PSNR", (char*) "SNR", (char*) "SSIM", (char*) "RMSE" };
+
+int main(int argc, char* argv[])
+{
+    if( argc < 4 ) 
+    {
+        printf("Usage: Img1 Img2 mode txtFile? val?\n"); 
+        exit(1);
+    }
+
+    OCTET* ImgIn1, *ImgIn2;
+    int nH1, nW1, nH2, nW2;
+    char cDernieresLettres[4];
+
+    int longueur = strlen(argv[1]);
+    strcpy(cDernieresLettres, argv[1] + longueur - 3);
+
+    if( !strcmp( cDernieresLettres, "pgm" ) ) 
+    {
+        lire_nb_lignes_colonnes_image_pgm(argv[1], &nH1, &nW1);
+        allocation_tableau(ImgIn1, OCTET, nH1 * nW1);
+        lire_image_pgm(argv[1], ImgIn1, nH1 * nW1);
+
+        longueur = strlen(argv[2]);
+        strcpy(cDernieresLettres, argv[2] + longueur - 3);
+        if( strcmp( cDernieresLettres, "pgm" ) ) 
+        {
+            printf("format d'image incompatible\n");
+            exit(1);
+        }
+
+        lire_nb_lignes_colonnes_image_pgm(argv[2], &nH2, &nW2);
+        if( nH1 != nH2 || nW1 != nW2 )
+        {
+            printf("taille d'image incompatible\n");
+            exit(1);
+        }
+
+        allocation_tableau(ImgIn2, OCTET, nH1 * nW1);
+        lire_image_pgm(argv[2], ImgIn2, nH1 * nW1);
+    }
+    if( !strcmp( cDernieresLettres, "ppm" ) ) 
+    {
+        lire_nb_lignes_colonnes_image_ppm(argv[1], &nH1, &nW1);
+        allocation_tableau(ImgIn1, OCTET, nH1 * nW1  *3);
+        lire_image_ppm(argv[1], ImgIn1, nH1 * nW1 * 3);
+
+        longueur = strlen(argv[2]);
+        strcpy(cDernieresLettres, argv[2] + longueur - 3);
+        if( strcmp( cDernieresLettres, "ppm" ) ) 
+        {
+            printf("format d'image incompatible\n");
+            exit(1);
+        }
+
+        lire_nb_lignes_colonnes_image_ppm(argv[2], &nH2, &nW2);
+        if( nH1 != nH2 || nW1 != nW2 )
+        {
+            printf("taille d'image incompatible\n");
+            exit(1);
+        }
+
+        allocation_tableau(ImgIn2, OCTET, nH1 * nW1 * 3);
+        lire_image_ppm(argv[2], ImgIn2, nH1 * nW1);
+    }
+
+    int mode = -1;
+    for( uint i = 0; i < NB_MEASURES; i++ )
+        if( !strcmp( argv[3], TAG[i] ) )
+            mode = i;
+    
+    if( mode == -1 )
+    {
+        printf("mode %s invalide.\nMode valide : ", argv[3] );
+
+        for( uint i = 0; i < NB_MEASURES-1; i++ )
+            printf("%s, ", TAG[i]);
+
+        printf("%s\n", TAG[NB_MEASURES-1] );
+    }
+
+    float res = (*measure_functions[mode])( ImgIn1, ImgIn2, (strcmp( cDernieresLettres, "ppm" ))?(nH1*nW1):(nH1*nW1*3) );
+
+    printf("%s entre %s et %s : %f\n", TAG[mode], argv[1], argv[2], res );
+
+    if( argc >= 6 )
+    {
+        FILE* f = fopen(argv[4], "a" );
+        if( !f )
+        {
+            printf("Le fichier %s n'a pas pu être ouvert\n", argv[4] );
+            exit(1);
+        }
+
+        fprintf( f, "%f %f\n", atof(argv[4]), res );
+
+        fclose(f);
+    }
+
+    return 0;
 }
