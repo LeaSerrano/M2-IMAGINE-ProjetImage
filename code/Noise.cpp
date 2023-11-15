@@ -4,7 +4,6 @@
 #include <iostream>
 #include "image_ppm.h"
 #include <random>
-#include "Mesure.cpp"
 #include <fstream>
 #include <ctime>
 
