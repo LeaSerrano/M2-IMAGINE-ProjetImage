@@ -8,9 +8,12 @@
 #include <complex>
 #include <vector>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////     AUXILIAIRE     ///////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void get_Mean_Var( std::vector< OCTET > Arr, float& Mean, float& Var )
 {
@@ -103,7 +106,9 @@ bool Index_Is_In_Vector( std::vector< uint >& indices, int i, int j )
     return false;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////     MOYENNEUR     ///////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Moyenneur_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite ) 
 {
@@ -223,7 +228,9 @@ void Moyenneur( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char*
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     MEDIAN     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////     MEDIAN     /////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Median_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite ) 
 {
@@ -343,8 +350,9 @@ void Median( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* ex
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     WIENER     ///////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////     WIENER     /////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Wiener_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Var_Bruit, float intensite ) 
 {
     int nH, nW, nTaille;
@@ -474,7 +482,9 @@ void Wiener( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* ex
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     GAUSSIEN     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////     GAUSSIEN     ////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Gaussien_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Mean, float Var, float intensite ) 
 {
@@ -631,7 +641,9 @@ void Gaussien( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     WIENER AVEC FOURNIER     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////     WIENER AVEC FOURNIER     //////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Fournier_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Var_Bruit, float intensite ) 
 {
@@ -719,7 +731,9 @@ void Fournier( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     GRADIENT     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////     GRADIENT     ////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, OCTET Seuil, float intensite ) 
 {
@@ -759,35 +773,63 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
                 int cur_i = visited[k];
                 int cur_j = visited[k+1];
 
-                if( cur_i + 1 <= i + voisins && cur_i + 1 < nH && ImgGrad[(cur_i + 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i+1, cur_j ) )
+                if( cur_i + 1 <= i + voisins && cur_i + 1 < nH 
+                 && ImgGrad[(cur_i + 1)*nW+cur_j] == cur_color 
+                 && !Index_Is_In_Vector( visited, cur_i+1, cur_j ) )
                 {
                     visited.push_back( cur_i + 1 );
                     visited.push_back( cur_j );
                 }
-                if( cur_i - 1 >= i - voisins && cur_i - 1 >= 0 && ImgGrad[(cur_i - 1)*nW+cur_j] == cur_color && Index_Is_In_Vector( visited, cur_i-1, cur_j ) )
+                if( cur_i - 1 >= i - voisins && cur_i - 1 >= 0 
+                 && ImgGrad[(cur_i - 1)*nW+cur_j] == cur_color 
+                 && !Index_Is_In_Vector( visited, cur_i-1, cur_j ) )
                 {
                     visited.push_back( cur_i - 1 );
                     visited.push_back( cur_j );
                 }
-                if( cur_j + 1 <= j + voisins && cur_j + 1 < nW && ImgGrad[cur_i*nW+cur_j+1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j+1 ) )
+                if( cur_j + 1 <= j + voisins && cur_j + 1 < nW 
+                 && ImgGrad[cur_i*nW+cur_j+1] == cur_color 
+                 && !Index_Is_In_Vector( visited, cur_i, cur_j+1 ) )
                 {
                     visited.push_back( cur_i );
                     visited.push_back( cur_j + 1);
                 }
-                if( cur_j - 1 >= j - voisins && cur_j - 1 >= 0 && ImgGrad[cur_i*nW+cur_j-1] == cur_color && Index_Is_In_Vector( visited, cur_i, cur_j-1 ) )
+                if( cur_j - 1 >= j - voisins && cur_j - 1 >= 0 
+                 && ImgGrad[cur_i*nW+cur_j-1] == cur_color 
+                 && !Index_Is_In_Vector( visited, cur_i, cur_j-1 ) )
                 {
                     visited.push_back( cur_i );
                     visited.push_back( cur_j - 1 );
                 }
             }
-
-            float moy = 0.;
-            for( uint k = 0; k < visited.size(); k += 2 )
-                moy += (float) ImgIn[visited[k]*nW+visited[k+1]];
-
-            float old_val = ImgIn[i*nW+j];
-            float new_val = moy / (float) (visited.size()/2);
             
+            float old_val = ImgIn[i*nW+j];
+            float new_val;
+
+            if( visited.size() == 2 )
+            {
+                int pixel_sum = 0;
+                int nb_vois_att = 0;
+
+                for( int k = -1; k <= 1; k++ )
+                    for( int l = -1; l <= 1; l++ )
+                        if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                        {
+                            pixel_sum += ImgIn[(i+k)*nW+(j+l)];
+                            nb_vois_att++;
+                        }
+                
+                new_val = (float) pixel_sum / (float) nb_vois_att;
+            }
+            else 
+            {
+                float moy = 0.;
+                for( uint k = 0; k < visited.size(); k += 2 )
+                    moy += (float) ImgIn[visited[k]*nW+visited[k+1]];
+                    
+                new_val = moy / (float) (visited.size()/2);
+            }
+
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
@@ -826,7 +868,9 @@ void Gradient( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         printf("Extension %s inconnue.\n", extension );
 }
 
-///////////////////////////////////////////////////////////////////////     MOYENNEUR     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////     MOYENNEUR PONDEREE     ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Pondere_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float power, float intensite ) 
 {
@@ -854,21 +898,28 @@ void Pondere_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int vo
                 for( int l = -voisins; l <= voisins; l++ )
                     if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW && !( k == 0 && l == 0 ) )
                     {
-                        float weight = 1 / pow( abs( ImgIn[(i+k)*nW+(j+l)] - cur_color ), power );
-                        if( weight == 0 )
-                            weight = 1;
+                        float power_res = pow( abs( ImgIn[(i+k)*nW+(j+l)] - cur_color ), power );
+                        if( power_res <= 0 )
+                            power_res = 1;
+                        float weight = 1 / power_res;
                         pixel_sum += ImgIn[(i+k)*nW+j+l] * weight;
                         weight_sum += weight;
+                        nb_vois_att++;
                     }
+            /*
+            float weight = (float) cur_color / (float) nb_vois_att;
+            pixel_sum += cur_color * weight;
+            weight_sum += weight;
+            */
             
             float old_val = ImgIn[i*nW+j];
-            float new_val = (float) pixel_sum / (float) weight_sum;
+            float new_val = pixel_sum / weight_sum;
             
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
     char cNomImgEcrite[250];
-    strcpy(cNomImgEcrite, std::string(std::string(OutDir) + cNomImgLue + std::string("_MoyennePondere_") + std::to_string(voisins) + std::string("_") + std::to_string(intensite) + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string(std::string(OutDir) + cNomImgLue + std::string("_MoyennePondere_") + std::to_string(voisins) + std::string("_") + std::to_string(power) + std::string("_") + std::to_string(intensite) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -906,8 +957,9 @@ void Pondere( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* e
     else   
         printf("Extension %s inconnue.\n", extension );
 }
-
-///////////////////////////////////////////////////////////////////////     MAIN     ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////     MAIN     //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum FILTER
 {
