@@ -8,8 +8,7 @@
 #include <complex>
 #include <vector>
 #include <cmath>
-#include <iomanip>
-#include <sstream>
+#include <format>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////     AUXILIAIRE     ///////////////////////////////////////////////////////////////////////
@@ -104,6 +103,42 @@ bool Index_Is_In_Vector( std::vector< uint >& indices, int i, int j )
             return true;
     
     return false;
+}
+
+void extrairePatch(OCTET *ImgIn, OCTET *ImgOut, int y, int x, int tailleFenetre, int nW, int nH) {
+    int m = tailleFenetre / 2;
+
+    for (int j = -m; j <= m; ++j) {
+        for (int i = -m; i <= m; ++i) {
+            int newY = y + j;
+            int newX = x + i;
+
+            if (newY >= 0 && newY < nH && newX >= 0 && newX < nW) {
+                ImgOut[(j + m) * tailleFenetre + (i + m)] = ImgIn[newY * nW + newX];
+            }
+        }
+    }
+}
+
+
+float calculerMesureSimilarite(OCTET* patch1, OCTET* patch2, int tailleFenetre, float sigma) {
+    float sum = 0;
+
+    for(int i = 0; i < tailleFenetre * tailleFenetre; i++) {
+        sum += exp(-(patch1[i] - patch2[i]) * (patch1[i] - patch2[i]) / (2 * sigma * sigma));
+    }
+
+    return sum;
+}
+
+
+float calculerPoids(float mesureSimilarite, float sigma, float h) {
+    float denom = sigma * sigma * h * h;
+    if (denom != 0.0) {
+        return exp(-mesureSimilarite / denom);
+    }
+
+    return 0.0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -957,6 +992,88 @@ void Pondere( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* e
     else   
         printf("Extension %s inconnue.\n", extension );
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////     NON LOCAL MEANS     /////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+
+    int nH, nW, nTaille, nTaille3;
+    std::string folder, extension;
+
+    OCTET *ImgIn, *ImgOut;
+
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+
+    nTaille = nH * nW;
+
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+
+    allocation_tableau(ImgOut, OCTET, nTaille);
+
+     OCTET *patchActuel;
+    allocation_tableau(patchActuel, OCTET, tailleFenetre * tailleFenetre);
+    
+    OCTET *patchVoisin;
+    allocation_tableau(patchVoisin, OCTET, tailleFenetre * tailleFenetre);
+
+    int m = tailleFenetre/2;
+
+    for (int y = m; y < nH - m; ++y) {
+        for (int x = m; x < nW - m; ++x) {
+            float sommePoids = 0.0;
+            float sommePoidsValeurs = 0.0;
+
+            extrairePatch(ImgIn, patchActuel, y, x, tailleFenetre, nW, nH);
+
+            for (int j = -m; j <= m; ++j) {
+                for (int i = -m; i <= m; ++i) {
+                    extrairePatch(ImgIn, patchVoisin, y + j, x + i, tailleFenetre, nW, nH);
+
+                    float mesureSimilarite = calculerMesureSimilarite(patchActuel, patchVoisin, tailleFenetre, sigma);
+                    float poids = calculerPoids(mesureSimilarite, sigma, h);
+
+                    sommePoids += poids;
+                    sommePoidsValeurs += poids * ImgIn[(y + j) * nW + (x + i)];
+                }
+            }
+
+            ImgOut[y * nW + x] = sommePoidsValeurs / sommePoids;
+
+        }
+    }
+
+    char cNomImgEcrite[250];
+    strcpy(cNomImgEcrite, std::string(std::string(OutDir) + cNomImgLue + std::string("_NonLocalMeans_") + std::to_string(sigma).c_str() + std::string("_") + std::to_string(h).c_str() + std::string("_") + std::to_string(tailleFenetre).c_str() + std::string(".pgm")).c_str());
+
+    ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
+    free(ImgIn); free(ImgOut);
+}
+
+void NonLocalMeans( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
+{   
+    char cNomImgLueLocation[256];
+    strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
+
+    float sigma = atof( argv[5] );
+
+    float h = atof( argv[6] );
+
+    int tailleFenetre = atoi( argv[7] );
+    if( tailleFenetre <= 0 )
+    {
+        printf("Nombre de voisins négatifs\n");
+        exit(1);
+    }
+
+    if( strcmp( extension, "pgm" ) == 0 )      NonLocalMeans_G( cNomImgLue, cNomImgLueLocation, OutDir, sigma, h, tailleFenetre);
+    //else if( strcmp( extension, "ppm" ) == 0 );
+    else   
+        printf("Extension %s inconnue.\n", extension );
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////     MAIN     //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -970,12 +1087,13 @@ enum FILTER
     GAUSSIEN,
     GRADIENT,
     PONDERE,
+    NONLOCALMEANS,
     NB_FILTERS
 };
 
-void (*filter_functions[NB_FILTERS]) ( int, char**, char*, char*, char*, char* ) = { Moyenneur, Median, Wiener, Fournier, Gaussien, Gradient, Pondere };
+void (*filter_functions[NB_FILTERS]) ( int, char**, char*, char*, char*, char* ) = { Moyenneur, Median, Wiener, Fournier, Gaussien, Gradient, Pondere, NonLocalMeans };
 
-char* TAG[NB_FILTERS] = { (char*) "MOY", (char*) "MED", (char*) "WIE", (char*) "FOU", (char*) "GAU", (char*) "GRA", (char*) "PON" };
+char* TAG[NB_FILTERS] = { (char*) "MOY", (char*) "MED", (char*) "WIE", (char*) "FOU", (char*) "GAU", (char*) "GRA", (char*) "PON", (char*) "NLM" };
 
 int getMode( char* modeStr, int argc )
 {
@@ -1052,6 +1170,16 @@ int getMode( char* modeStr, int argc )
         
         mode = PONDERE;
     }
+    else if( !strcmp( modeStr, TAG[NONLOCALMEANS] ) )
+    {
+        if( argc < 7 )
+        {
+            printf("Usage: DirIn ImageIn DirOut NLM ponderation tailleFenetreDeRecherche tailleFenetre\n"); 
+            exit(1);
+        }
+        
+        mode = NONLOCALMEANS;
+    }
     else 
     {
         printf("Le mode %s n'existe pas !\nModes valides : MOY, MED, WIE, GAU\n", modeStr );
@@ -1072,7 +1200,8 @@ int main(int argc, char* argv[])
                        "MED : filtre médian ( args : #voisins intensite? )\n"
                        "WIE : filtre de Wiener ( args : #voisins variance_du_bruit intensite? )\n"
                        "FOU : filtre de Wiener avec une transformation de fournier ( à éviter, compiler avec -O3 )\n"
-                       "GAU : filtre gaussien ( args : #voisins moyenne? variance? intensite? )\n"); 
+                       "GAU : filtre gaussien ( args : #voisins moyenne? variance? intensite? )\n"
+                       "NLM : algorithme non local means (args : ponderation tailleFenetreDeRecherche tailleFenetre)\n"); 
         exit(1);
     }
     else if( strlen( argv[4] ) != 3 )
