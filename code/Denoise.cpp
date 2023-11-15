@@ -1320,29 +1320,13 @@ void Pondere( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* e
 /////////////////////////////////////////////////////////////////////     NON LOCAL MEANS     /////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+void calculNonLocalMeans(int m, int nH, int nW, int tailleFenetre,float sigma, float h, OCTET *ImgIn, OCTET *ImgOut) {
 
-    int nH, nW, nTaille, nTaille3;
-    std::string folder, extension;
-
-    OCTET *ImgIn, *ImgOut;
-
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
-
-    nTaille = nH * nW;
-
-    allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
-
-    allocation_tableau(ImgOut, OCTET, nTaille);
-
-     OCTET *patchActuel;
+    OCTET *patchActuel;
     allocation_tableau(patchActuel, OCTET, tailleFenetre * tailleFenetre);
     
     OCTET *patchVoisin;
     allocation_tableau(patchVoisin, OCTET, tailleFenetre * tailleFenetre);
-
-    int m = tailleFenetre/2;
 
     for (int y = m; y < nH - m; ++y) {
         for (int x = m; x < nW - m; ++x) {
@@ -1367,6 +1351,26 @@ void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, f
 
         }
     }
+}
+
+void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+
+    int nH, nW, nTaille;
+
+    OCTET *ImgIn, *ImgOut;
+
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+
+    nTaille = nH * nW;
+
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+
+    allocation_tableau(ImgOut, OCTET, nTaille);
+
+
+    int m = tailleFenetre/2;
+    calculNonLocalMeans(m, nH, nW, tailleFenetre, sigma, h, ImgIn, ImgOut);
 
     char cNomImgEcrite[250];
     std::string sigmaStr = std::to_string(sigma);
@@ -1379,6 +1383,67 @@ void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, f
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
     free(ImgIn); free(ImgOut);
+}
+
+void NonLocalMeans_RGB(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+
+    int nH, nW, nTaille, nTaille3;
+    std::string folder, extension;
+
+    OCTET *ImgIn, *ImgOut;
+
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+
+    nTaille = nH * nW;
+    nTaille3 = nTaille * 3;
+
+    allocation_tableau(ImgIn, OCTET, nTaille3);
+    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+
+    allocation_tableau(ImgOut, OCTET, nTaille3);
+
+    OCTET *tabIdR, *tabIdG, *tabIdB;
+
+    allocation_tableau(tabIdR, OCTET, nTaille);
+    allocation_tableau(tabIdG, OCTET, nTaille);
+    allocation_tableau(tabIdB, OCTET, nTaille);
+
+    planR(tabIdR, ImgIn, nTaille);
+    planV(tabIdG, ImgIn, nTaille);
+    planB(tabIdB, ImgIn, nTaille);
+
+    OCTET *traitementR, *traitementG, *traitementB;
+
+    allocation_tableau(traitementR, OCTET, nTaille);
+    allocation_tableau(traitementG, OCTET, nTaille);
+    allocation_tableau(traitementB, OCTET, nTaille);
+
+    int m = tailleFenetre/2;
+
+    calculNonLocalMeans(m, nH, nW, tailleFenetre, sigma, h, tabIdR, traitementR);
+    calculNonLocalMeans(m, nH, nW, tailleFenetre, sigma, h, tabIdG, traitementG);
+    calculNonLocalMeans(m, nH, nW, tailleFenetre, sigma, h, tabIdB, traitementB);
+
+    for (int elt=0; elt < nTaille3; elt+=3)
+    {
+      ImgOut[elt] = traitementR[elt/3];
+      ImgOut[elt+1] = traitementG[elt/3];
+      ImgOut[elt+2] = traitementB[elt/3];
+    }
+
+
+    char cNomImgEcrite[250];
+    std::string sigmaStr = std::to_string(sigma);
+    std::string hStr = std::to_string(h);
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_") 
+                                     + std::to_string(m) + std::string("_") 
+                                     + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_") 
+                                     + hStr.substr(0, hStr.find(".") + 2) 
+                                     + std::string(".ppm") ).c_str());
+    
+    ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
+
+    free(ImgIn); free(ImgOut); free(tabIdR); free(tabIdG); free(tabIdB); free(traitementR); free(traitementG); free(traitementB);
 }
 
 void NonLocalMeans( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
@@ -1398,7 +1463,7 @@ void NonLocalMeans( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, c
     }
 
     if( strcmp( extension, "pgm" ) == 0 )      NonLocalMeans_G( cNomImgLue, cNomImgLueLocation, OutDir, sigma, h, tailleFenetre);
-    //else if( strcmp( extension, "ppm" ) == 0 );
+    else if( strcmp( extension, "ppm" ) == 0 ) NonLocalMeans_RGB( cNomImgLue, cNomImgLueLocation, OutDir, sigma, h, tailleFenetre);
     else   
         printf("Extension %s inconnue.\n", extension );
 }
