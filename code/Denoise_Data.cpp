@@ -9,6 +9,11 @@
 #include <vector>
 #include <cmath>
 
+/* This program functions the same as Denoise.cpp. The only difference is that the name of the output image is the same as the input image.
+ * It makes things easier for image comparison between two repositories using shell.
+ * Be careful not to be give the same path twice to the programm, as it would overwrite the original image with the modified one.
+*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////     AUXILIAIRE     ///////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,10 +185,7 @@ void Moyenneur_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int 
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -235,10 +237,7 @@ void Moyenneur_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, in
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -308,10 +307,7 @@ void Median_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voi
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MED_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
                                      
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -365,10 +361,7 @@ void Median_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str() );
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str() );
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -441,11 +434,7 @@ void Wiener_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voi
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
     std::string Var_BruitStr = std::to_string(Var_Bruit);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -502,11 +491,7 @@ void Wiener_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
     std::string Var_BruitStr = std::to_string(Var_Bruit);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -595,12 +580,7 @@ void Gaussien_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
     std::string intensiteStr = std::to_string(intensite);
     std::string MeanStr = std::to_string(Mean);
     std::string VarStr = std::to_string(Var);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_") 
-                                     + VarStr.substr(0, VarStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut); free( filter );
@@ -662,12 +642,7 @@ void Gaussien_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
     std::string intensiteStr = std::to_string(intensite);
     std::string MeanStr = std::to_string(Mean);
     std::string VarStr = std::to_string(Var);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_") 
-                                     + VarStr.substr(0, VarStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut); free( filter );
@@ -773,11 +748,7 @@ void Fournier_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
     std::string Var_BruitStr = std::to_string(Var_Bruit);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_FOU_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut); free(coeff); free(filter);
@@ -970,12 +941,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + std::to_string(Seuil) + std::string("_") 
-                                     + std::string((use_MOY)?"moy":"gra") + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );
@@ -1133,12 +1099,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + std::to_string(Seuil) + std::string("_") 
-                                     + std::string((use_MOY)?"moy":"gra") + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );
@@ -1220,11 +1181,7 @@ void Pondere_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int vo
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
     std::string powerStr = std::to_string(power);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -1273,11 +1230,7 @@ void Pondere_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int 
     char cNomImgEcrite[250];
     std::string intensiteStr = std::to_string(intensite);
     std::string powerStr = std::to_string(power);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
@@ -1375,11 +1328,7 @@ void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, f
     char cNomImgEcrite[250];
     std::string sigmaStr = std::to_string(sigma);
     std::string hStr = std::to_string(h);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_") 
-                                     + std::to_string(m) + std::string("_") 
-                                     + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_") 
-                                     + hStr.substr(0, hStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
     free(ImgIn); free(ImgOut);
@@ -1435,11 +1384,7 @@ void NonLocalMeans_RGB(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir,
     char cNomImgEcrite[250];
     std::string sigmaStr = std::to_string(sigma);
     std::string hStr = std::to_string(h);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_") 
-                                     + std::to_string(m) + std::string("_") 
-                                     + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_") 
-                                     + hStr.substr(0, hStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
     
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
 

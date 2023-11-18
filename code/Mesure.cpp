@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 {
     if( argc < 4 ) 
     {
-        printf("Usage: Img1 Img2 mode txtFile? val?\n"); 
+        printf("Usage: Img1 Img2 mode txtFile?\n"); 
         exit(1);
     }
 
@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
 
     printf("%s entre %s et %s : %f\n", TAG[mode], argv[1], argv[2], res );
 
-    if( argc >= 6 )
+    if( argc >= 5 )
     {
         FILE* f = fopen(argv[4], "a" );
         if( !f )
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
-        fprintf( f, "%f %f\n", atof(argv[4]), res );
+        fprintf( f, "%f\n", res );
 
         fclose(f);
     }
