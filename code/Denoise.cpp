@@ -843,10 +843,10 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
         for( int l = -voisins; l <= voisins; l++ )
             filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
-    float* filter_default = ( float* ) malloc( sizeof(float) * 9 );
+    float* filter_default = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
-    for( int k = -1; k <= 1; k++ )
-        for( int l = -1; l <= 1; l++ )
+    for( int k = -voisins; k <= voisins; k++ )
+        for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
     for (int i = 0; i < nH-1; i++) 
@@ -911,8 +911,8 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
                     int pixel_sum = 0;
                     int nb_vois_att = 0;
 
-                    for( int k = -1; k <= 1; k++ )
-                        for( int l = -1; l <= 1; l++ )
+                    for( int k = -voisins; k <= voisins; k++ )
+                        for( int l = -voisins; l <= voisins; l++ )
                             if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
                             {
                                 pixel_sum += ImgIn[(i+k)*nW+(j+l)];
@@ -926,8 +926,8 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
                     new_val = 0.;
                     float total_weight = 0;
 
-                    for( int k = -1; k <= 1; k++ )
-                        for( int l = -1; l <= 1; l++ )
+                    for( int k = -voisins; k <= voisins; k++ )
+                        for( int l = -voisins; l <= voisins; l++ )
                             if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
                             {
                                 new_val += ImgIn[(i+k)*nW+(j+l)] * filter_default[(k+1)*3+(l+1)];
@@ -968,15 +968,16 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
+    char cNomImgEcrite[512] = "lol.pgm";
+    /*
     std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + std::to_string(Seuil) + std::string("_") 
-                                     + std::string((use_MOY)?"moy":"gra") + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
+    strcpy(cNomImgEcrite, std::string( std::string(OutDir)// + std::string(cNomImgLue) //+ std::string("_GRA_") 
+                                     //+ std::to_string(voisins) + std::string("_") 
+                                     //+ std::to_string(Seuil) + std::string("_") 
+                                     //+ std::string((use_MOY)?"moy":"gra") + std::string("_") 
+                                    // + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
                                      + std::string(".pgm") ).c_str());
-
+                                    */
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );
 }
@@ -1004,10 +1005,10 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
         for( int l = -voisins; l <= voisins; l++ )
             filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
-    float* filter_default = ( float* ) malloc( sizeof(float) * 9 );
+    float* filter_default = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
-    for( int k = -1; k <= 1; k++ )
-        for( int l = -1; l <= 1; l++ )
+    for( int k = -voisins; k <= voisins; k++ )
+        for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
     for (int i = 0; i < nH-1; i++) 
@@ -1131,7 +1132,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
                 ImgOut[(i*nW+j)*3+d] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
             }
 
-    char cNomImgEcrite[250];
+    char cNomImgEcrite[512];
     std::string intensiteStr = std::to_string(intensite);
     strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
                                      + std::to_string(voisins) + std::string("_") 

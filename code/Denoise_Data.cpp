@@ -814,10 +814,10 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
         for( int l = -voisins; l <= voisins; l++ )
             filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
-    float* filter_default = ( float* ) malloc( sizeof(float) * 9 );
+    float* filter_default = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
-    for( int k = -1; k <= 1; k++ )
-        for( int l = -1; l <= 1; l++ )
+    for( int k = -voisins; k <= voisins; k++ )
+        for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
     for (int i = 0; i < nH-1; i++) 
@@ -970,10 +970,10 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
         for( int l = -voisins; l <= voisins; l++ )
             filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
-    float* filter_default = ( float* ) malloc( sizeof(float) * 9 );
+    float* filter_default = ( float* ) malloc( sizeof(float) * nWF * nWF );
 
-    for( int k = -1; k <= 1; k++ )
-        for( int l = -1; l <= 1; l++ )
+    for( int k = -voisins; k <= voisins; k++ )
+        for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
     for (int i = 0; i < nH-1; i++) 

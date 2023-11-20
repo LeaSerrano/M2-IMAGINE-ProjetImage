@@ -13,7 +13,7 @@ then
     then
         ImgOutLoc="DB/$1_$2/$3_$4_$5/"
         mkdir $ImgOutLoc
-        rm $ImgOutLoc*
+        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -24,7 +24,7 @@ then
     then
         ImgOutLoc="DB/$1_$2/$3_$4/"
         mkdir $ImgOutLoc
-        rm $ImgOutLoc*
+        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -41,7 +41,7 @@ then
         echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5/"
         mkdir $ImgOutLoc
-        rm $ImgOutLoc*
+        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -54,7 +54,7 @@ then
         echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5_$6/"
         mkdir $ImgOutLoc
-        rm $ImgOutLoc*
+        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -67,7 +67,7 @@ then
         echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5_$6_$7/"
         mkdir $ImgOutLoc
-        rm $ImgOutLoc*
+        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -77,13 +77,13 @@ then
     fi
 elif [ "$2" = "M" ] 
 then 
-    ImgsIn=`ls $2`
+    ImgsIn=`ls $ImgInLoc`
+    DImg="DB/$1_D/$3/"
 
     for eachfile in $ImgsIn
     do
         for mode in PSNR SNR SSIM RMSE
         do
-            DImg="DB/$1_D/$3/"
             txtfile="DB/$1_$2/$mode_$3.txt"
 
             ./Mesure $ImgInLoc$eachfile $DImg$eachfile $mode $txtfile
@@ -91,6 +91,6 @@ then
     done
 elif [ "$2" = "R" ] 
 then 
-    rm $1/*
+    rm -f $1/*
     rmdir $1
 fi
