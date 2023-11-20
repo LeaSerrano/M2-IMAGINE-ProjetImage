@@ -791,7 +791,7 @@ void Fournier( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
 ////////////////////////////////////////////////////////////////////////     GRADIENT     ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, OCTET Seuil, bool use_MOY, float intensite ) 
+void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, bool use_MOY, float intensite ) 
 {
     int nH, nW, nTaille;
 
@@ -820,12 +820,24 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
         for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
+    float* ImgGradF = (float*) malloc( sizeof( float ) * nTaille );
+    std::vector<float> vals;
+
     for (int i = 0; i < nH-1; i++) 
         for (int j = 0; j < nW-1; j++) 
         {
             float val = sqrt( pow( ImgIn[(i+1)*nW+j]- ImgIn[i*nW+j] , 2 ) + pow( ImgIn[i*nW+j]- ImgIn[i*nW+j+1], 2 ) );
-            ImgGrad[i*nW+j] = (val<(float)Seuil)?(0):(255);
+            vals.push_back( val );
+            ImgGradF[i*nW+j] = val;
         }
+
+    std::sort( vals.begin(), vals.end() );
+    
+    float Seuil = vals[ nTaille/2 ];
+
+    for (int i = 0; i < nH-1; i++) 
+        for (int j = 0; j < nW-1; j++) 
+            ImgGrad[i*nW+j] = (ImgGradF[i*nW+j]<Seuil)?(0):(255);
     
     for( int i = 0; i < nH; i++ )
         for( int j = 0; j < nW; j++ )
@@ -944,10 +956,10 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
     strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
-    free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );
+    free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );free( ImgGradF );
 }
 
-void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, OCTET Seuil, bool use_MOY, float intensite ) 
+void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, bool use_MOY, float intensite ) 
 {
     int nH, nW, nTaille;
 
@@ -960,7 +972,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
     lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
-    allocation_tableau(ImgGrad, OCTET, nTaille*3);
+    allocation_tableau(ImgGrad, OCTET, nTaille);
 
     int nWF = voisins*2+1;
     
@@ -976,13 +988,31 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
         for( int l = -voisins; l <= voisins; l++ )
             filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
+    float* ImgGradF = (float*) malloc( sizeof( float ) * nTaille );
+    std::vector<float> vals[3];
+
     for (int i = 0; i < nH-1; i++) 
         for (int j = 0; j < nW-1; j++) 
             for( uint d = 0; d < 3; d++ )
             {
                 float val = sqrt( pow( ImgIn[((i+1)*nW+j)*3+d]- ImgIn[(i*nW+j)*3+d] , 2 ) + pow( ImgIn[(i*nW+j+1)*3+d]- ImgIn[(i*nW+j)*3+d], 2 ) );
-                ImgGrad[(i*nW+j)*3+d] = (val<(float)Seuil)?(0):(255);
+                vals[d].push_back( val );
+                ImgGradF[(i*nW+j)*3+d] = val;
             }
+    for( uint d = 0; d < 3; d++ )
+        std::sort( vals[d].begin(), vals[d].end() );
+    
+    float SeuilR = vals[0][ nTaille/6 ];
+    float SeuilG = vals[1][ nTaille/6 ];
+    float SeuilB = vals[2][ nTaille/6 ];
+
+    for (int i = 0; i < nH-1; i++) 
+        for (int j = 0; j < nW-1; j++) 
+        {
+            ImgGrad[(i*nW+j)*3] = (ImgGradF[(i*nW+j)*3]<SeuilR)?(0):(255);
+            ImgGrad[(i*nW+j)*3+1] = (ImgGradF[(i*nW+j)*3+1]<SeuilG)?(0):(255);
+            ImgGrad[(i*nW+j)*3+2] = (ImgGradF[(i*nW+j)*3+2]<SeuilB)?(0):(255);
+        }
     
     for( int i = 0; i < nH; i++ )
         for( int j = 0; j < nW; j++ )
@@ -1094,7 +1124,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
                     new_val = moy;
                 }
 
-                ImgOut[(i*nW+j)*3+d] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
+                ImgOut[(i*nW+j)*3+d] = ImgGrad[(i*nW+j)*3+d];//round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
             }
 
     char cNomImgEcrite[250];
@@ -1102,7 +1132,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
     strcpy(cNomImgEcrite, std::string( std::string(OutDir) + std::string(cNomImgLue) + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
-    free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );
+    free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default ); free( ImgGradF );
 }
 
 void Gradient( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
@@ -1117,20 +1147,18 @@ void Gradient( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         exit(1);
     }
 
-    OCTET Seuil = (OCTET) round( clip( atof( argv[6] ), 0., 255. ) );
-
-    bool use_MOY = (argv[7][0] == '0')?false:true;
+    bool use_MOY = (argv[6][0] == '0')?false:true;
 
     float intensite = 1.;
-    if( argc >= 9 )
+    if( argc >= 8 )
     {
-        intensite = atof( argv[8] );
+        intensite = atof( argv[7] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
     }
 
-    if( strcmp( extension, "pgm" ) == 0 )       Gradient_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Seuil, use_MOY, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 )  Gradient_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Seuil, use_MOY, intensite );
+    if( strcmp( extension, "pgm" ) == 0 )       Gradient_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, use_MOY, intensite );
+    else if( strcmp( extension, "ppm" ) == 0 )  Gradient_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, use_MOY, intensite );
     else   
         printf("Extension %s inconnue.\n", extension );
 }
@@ -1491,9 +1519,9 @@ int getMode( char* modeStr, int argc )
     }
     else if( !strcmp( modeStr, TAG[GRADIENT] ) )
     {
-        if( argc < 8 )
+        if( argc < 7 )
         {
-            printf("Usage: DirIn ImageIn DirOut GRA #voisins Seuil utiliser_moyenneur intensité( entre 0 et 1 )\n"); 
+            printf("Usage: DirIn ImageIn DirOut GRA #voisins utiliser_moyenneur intensité( entre 0 et 1 )\n"); 
             exit(1);
         }
         
@@ -1545,7 +1573,7 @@ int main(int argc, char* argv[])
                        "WIE : filtre de Wiener ( args : #voisins variance_du_bruit intensite? )\n"
                        "FOU : filtre de Wiener avec une transformation de fournier ( à éviter, compiler avec -O3 )\n"
                        "GAU : filtre gaussien ( args : #voisins moyenne variance intensite? )\n"
-                       "GRA : filtre utilisant la carte de gradient seuillée ( args : #voisins seuil intensite? )\n"
+                       "GRA : filtre utilisant la carte de gradient seuillée ( args : #voisins intensite? )\n"
                        "PON : filtre moyenneur pondéré ( args : #voisins intensite? )\n"
                        "NLM : algorithme non local means (args : ponderation tailleFenetreDeRecherche tailleFenetre)\n"); 
         exit(1);
