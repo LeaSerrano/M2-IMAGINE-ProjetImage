@@ -31,6 +31,9 @@ int DataBase_Grey::set_dimY( int dim )
 
 OCTET* DataBase_Grey::redim_Img( OCTET* Img, int dimImgX, int dimImgY )
 {
+    if( dimX == dimImgX && dimY == dimImgY )
+        return Img;
+    
     if( !Img )
         return NULL;
 
@@ -56,7 +59,7 @@ OCTET* DataBase_Grey::redim_Img( OCTET* Img, int dimImgX, int dimImgY )
                 for( int ImgY = yBeg; ImgY < yEnd; ImgY++ )
                     mean += (double) Img[ ImgY * dimImgX + ImgX ];
             
-            mean = mean / (double) ( ( xEnd - xBeg + 1 ) * ( yEnd - yBeg + 1) );
+            mean = mean / (double) ( ( xEnd - xBeg ) * ( yEnd - yBeg ) );
 
             newImg[ y * dimX + x ] = mean;
         }

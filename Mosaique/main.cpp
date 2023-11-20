@@ -9,16 +9,19 @@ int main( int argc, char** argv )
         return 1;
     }
 
-    int taille_imagette = 32;
+    int taille_imagette = 512;
     
-    DataBase_Grey DB( "./res/DB/cover", taille_imagette, taille_imagette );
-    DB.load_DataBase_Grey();
+    DataBase_Color DB( "./res/CID22", taille_imagette, taille_imagette );
+    DB.load_DataBase_Color();
 
     mosaique_Color MPGM( "./res/ImgIn/beach.png", "./res/ImgOut/beach_outline_32.png", taille_imagette, taille_imagette );
+    MPGM.copy_used_imagettes( std::string("./res/CID22_ppm/"), std::string(".ppm"), DB );
+/*
+    mosaique_Grey MPGM( "./res/ImgIn/beach.png", "./res/ImgOut/beach_outline_32.png", taille_imagette, taille_imagette );
     MPGM.load_ImgIn();
     MPGM.generate_ImgOut_outline( DB );
     MPGM.write_ImgOut();
-/*
+
     MPGM.load_ImgIn();
     MPGM.generate_ImgOut_PSNR( DB );
     MPGM.write_ImgOut();

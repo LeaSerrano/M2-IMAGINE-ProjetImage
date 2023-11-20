@@ -32,6 +32,9 @@ int DataBase_Color::set_dimY( int dim )
 
 OCTET* DataBase_Color::redim_Img( OCTET* Img, int dimImgX, int dimImgY )
 {
+    if( dimX == dimImgX && dimY == dimImgY )
+        return Img;
+    
     if( !Img )
         return NULL;
 
@@ -64,9 +67,9 @@ OCTET* DataBase_Color::redim_Img( OCTET* Img, int dimImgX, int dimImgY )
                     mean[2] += (double) Img[ ( ImgY * dimImgX + ImgX ) * 3 + 2 ];
                 }
 
-            mean[0] /= (double) ( ( xEnd - xBeg + 1 ) * ( yEnd - yBeg + 1) );
-            mean[1] /= (double) ( ( xEnd - xBeg + 1 ) * ( yEnd - yBeg + 1) );
-            mean[2] /= (double) ( ( xEnd - xBeg + 1 ) * ( yEnd - yBeg + 1) );
+            mean[0] /= (double) ( ( xEnd - xBeg  ) * ( yEnd - yBeg) );
+            mean[1] /= (double) ( ( xEnd - xBeg ) * ( yEnd - yBeg) );
+            mean[2] /= (double) ( ( xEnd - xBeg  ) * ( yEnd - yBeg ) );
 
             newImg[ ( y * dimX + x ) * 3 ] = mean[0];
             newImg[ ( y * dimX + x ) * 3 + 1 ] = mean[1];
@@ -76,7 +79,6 @@ OCTET* DataBase_Color::redim_Img( OCTET* Img, int dimImgX, int dimImgY )
     free( Img );
     return newImg;
 }   
-
 
 int DataBase_Color::load_DataBase_Color()
 {

@@ -84,7 +84,7 @@ then
     do
         for mode in PSNR SNR SSIM RMSE
         do
-            txtfile="DB/$1_$2/$mode_$3.txt"
+            txtfile="DB/$1_$2/{$mode}_$3.txt"
 
             ./Mesure $ImgInLoc$eachfile $DImg$eachfile $mode $txtfile
         done
