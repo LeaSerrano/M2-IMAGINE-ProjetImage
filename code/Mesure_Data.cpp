@@ -201,9 +201,9 @@ int main(int argc, char* argv[])
 
     float res = (*measure_functions[mode])( ImgIn1, ImgIn2, (strcmp( cDernieresLettres, "ppm" ))?(nH1*nW1):(nH1*nW1*3) );
 
-    printf("%s entre %s et %s : %f\n", TAG[mode], argv[1], argv[2], res );
+    //printf("%s entre %s et %s : %f\n", TAG[mode], argv[1], argv[2], res );
 
-    if( argc >= 6 )
+    if( argc >= 5 )
     {
         FILE* f = fopen(argv[4], "a" );
         if( !f )
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
-        fprintf( f, "%f\n", argv[5], res );
+        fprintf( f, "%f\n", res );
 
         fclose(f);
     }

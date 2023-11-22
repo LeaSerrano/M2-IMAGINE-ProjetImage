@@ -13,7 +13,6 @@ then
     then
         ImgOutLoc="DB/$1_$2/$3_$4_$5/"
         mkdir $ImgOutLoc
-        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -24,7 +23,6 @@ then
     then
         ImgOutLoc="DB/$1_$2/$3_$4/"
         mkdir $ImgOutLoc
-        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -35,39 +33,33 @@ then
 
 elif [ "$2" = "D" ] 
 then 
-    if [ "$4" = "MOY" ] || [ "$4" = "MED" ]
+    if [ "$4" = "MOY" ] || [ "$4" = "MED" ] 
     then
         ImgInLoc="DB/$1""_N""/$3/"
-        echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5/"
         mkdir $ImgOutLoc
-        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
             ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 ;
         done
-    elif [ "$4" = "WIE" ] || [ "$4" = "FOU" ] || [ "$4" = "PON" ]
+    elif [ "$4" = "WIE" ] || [ "$4" = "FOU" ] || [ "$4" = "GRA" ] || [ "$4" = "PON" ]
     then
         ImgInLoc="DB/$1""_N""/$3/"
-        echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5_$6/"
         mkdir $ImgOutLoc
-        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
             ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 $6 ;
         done
-    elif [ "$4" = "GAU" ] || [ "$4" = "GRA" ] || [ "$4" = "NLM" ]
+    elif [ "$4" = "GAU" ] || [ "$4" = "NLM" ]
     then
         ImgInLoc="DB/$1""_N""/$3/"
-        echo $ImgInLoc
         ImgOutLoc="DB/$1_$2/$3_$4_$5_$6_$7/"
         mkdir $ImgOutLoc
-        rm -f $ImgOutLoc*
 
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
@@ -84,10 +76,21 @@ then
     do
         for mode in PSNR SNR SSIM RMSE
         do
-            txtfile="DB/$1_$2/{$mode}_$3.txt"
+            txtfile="DB/$1_$2/$mode/{$mode}_$3.txt"
 
             ./Mesure $ImgInLoc$eachfile $DImg$eachfile $mode $txtfile
         done
+    done
+elif [ "$2" = "F" ] 
+then 
+    for mode in PSNR SNR SSIM RMSE
+    do
+        txtfileIn="DB/$1_M/{$mode}_$3.txt"
+        txtfileOut="DB/$1_M/{$mode}_$4.txt"
+
+        tenth_arg=${10}
+
+        ./GetMeanVar $txtfileIn $txtfileOut $5 $6 $7 $8 $9 $tenth_arg
     done
 elif [ "$2" = "R" ] 
 then 

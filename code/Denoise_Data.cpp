@@ -1573,7 +1573,7 @@ int main(int argc, char* argv[])
                        "WIE : filtre de Wiener ( args : #voisins variance_du_bruit intensite? )\n"
                        "FOU : filtre de Wiener avec une transformation de fournier ( à éviter, compiler avec -O3 )\n"
                        "GAU : filtre gaussien ( args : #voisins moyenne variance intensite? )\n"
-                       "GRA : filtre utilisant la carte de gradient seuillée ( args : #voisins intensite? )\n"
+                       "GRA : filtre utilisant la carte de gradient seuillée ( args : #voisins use_moy intensite? )\n"
                        "PON : filtre moyenneur pondéré ( args : #voisins intensite? )\n"
                        "NLM : algorithme non local means (args : ponderation tailleFenetreDeRecherche tailleFenetre)\n"); 
         exit(1);
