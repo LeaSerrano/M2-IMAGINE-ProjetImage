@@ -9,7 +9,8 @@ g++ GetMeanVar.cpp -o GetMeanVar -O3
 
 DB=$1
 
-voisins='1 2 3 4'
+voisins='1 2 3 4 5 6'
+voisinsNLM='1 2 3 4'
 
 mean_GAU='0'
 var_GAU='0.5 1 1.5 2 2.5'
@@ -38,7 +39,7 @@ Gaussien()
 
         for mode in PSNR SNR SSIM RMSE
         do
-            rm DB/$DB\_M/{$mode}\_$DirD.txt
+            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
         done
     done
     }&
@@ -57,7 +58,7 @@ Gaussien()
 
         for mode in PSNR SNR SSIM RMSE
         do
-            rm DB/$DB\_M/{$mode}\_$DirD.txt
+            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
         done
     done
     }&
@@ -80,7 +81,7 @@ Gaussien()
 
                 for mode in PSNR SNR SSIM RMSE
                 do
-                    rm DB/$DB\_M/{$mode}\_$DirD.txt
+                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
                 done
             done
         done
@@ -103,7 +104,7 @@ Gaussien()
 
             for mode in PSNR SNR SSIM RMSE
             do
-                rm DB/$DB\_M/{$mode}\_$DirD.txt
+                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
             done
         done
     done
@@ -125,7 +126,7 @@ Gaussien()
 
             for mode in PSNR SNR SSIM RMSE
             do
-                rm DB/$DB\_M/{$mode}\_$DirD.txt
+                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
             done
         done
     done
@@ -137,7 +138,7 @@ Gaussien()
     do
         for t in $tailleRecherche
         do
-            for v in $voisins 
+            for v in $voisinsNLM 
             do
                 DirD=$DirN\_NLM\_$p\_$t\_$v
                 FileF=GAU_NLM
@@ -149,7 +150,7 @@ Gaussien()
 
                 for mode in PSNR SNR SSIM RMSE
                 do
-                    rm DB/$DB\_M/{$mode}\_$DirD.txt
+                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
                 done
             done
         done
@@ -181,18 +182,18 @@ Other()
 
         sh GenImg.sh $DB D $DirN MOY $v
         sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
+        sh GenImg.sh $DB F $DirD $FileF 3 $v $2
         sh GenImg.sh DB/$DB\_D/$DirD R 
 
         for mode in PSNR SNR SSIM RMSE
         do
-            rm DB/$DB\_M/{$mode}\_$DirD.txt
+            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
         done
     done
     }&
     T1=${!}
 
-    {   # Filtre Médian
+    { exit   # Filtre Médian
     for v in $voisins 
     do
         DirD=$DirN\_MED\_$v
@@ -200,18 +201,18 @@ Other()
 
         sh GenImg.sh $DB D $DirN MED $v
         sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
+        sh GenImg.sh $DB F $DirD $FileF 3 $v $2
         sh GenImg.sh DB/$DB\_D/$DirD R 
 
         for mode in PSNR SNR SSIM RMSE
         do
-            rm DB/$DB\_M/{$mode}\_$DirD.txt
+            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
         done
     done
     }&
     T2=${!}
 
-    { # Filtre Gaussien
+    { exit # Filtre Gaussien
     for v in $voisins 
     do
         for mean in $mean_GAU
@@ -223,12 +224,12 @@ Other()
 
                 sh GenImg.sh $DB D $DirN GAU $v $mean $var
                 sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 3 $v $mean $var $1 $2
+                sh GenImg.sh $DB F $DirD $FileF 3 $v $mean $var $2
                 sh GenImg.sh DB/$DB\_D/$DirD R 
 
                 for mode in PSNR SNR SSIM RMSE
                 do
-                    rm DB/$DB\_M/{$mode}\_$DirD.txt
+                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
                 done
             done
         done
@@ -236,7 +237,7 @@ Other()
     }&
     T3=${!}
 
-    { # Filtre Gradient 
+    { exit # Filtre Gradient 
     for v in $voisins 
     do
         for c in 0 1 
@@ -246,19 +247,19 @@ Other()
 
             sh GenImg.sh $DB D $DirN GRA $v $c
             sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $c $1 $2
+            sh GenImg.sh $DB F $DirD $FileF 4 $v $c $2
             sh GenImg.sh DB/$DB\_D/$DirD R 
 
             for mode in PSNR SNR SSIM RMSE
             do
-                rm DB/$DB\_M/{$mode}\_$DirD.txt
+                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
             done
         done
     done
     }&
     T4=${!}
 
-    { # Filtre Pondéré
+    { exit # Filtre Pondéré
     for v in $voisins 
     do
         for p in $puissance
@@ -268,36 +269,36 @@ Other()
 
             sh GenImg.sh $DB D $DirN PON $v $p
             sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $p $1 $2
+            sh GenImg.sh $DB F $DirD $FileF 4 $v $p $2
             sh GenImg.sh DB/$DB\_D/$DirD R 
 
             for mode in PSNR SNR SSIM RMSE
             do
-                rm DB/$DB\_M/{$mode}\_$DirD.txt
+                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
             done
         done
     done
     }&
     T5=${!}
 
-    { # Non Local Mean
+    { exit # Non Local Mean
     for p in $ponderation
     do
         for t in $tailleRecherche
         do
-            for v in $voisins 
+            for v in $voisinsNLM 
             do
                 DirD=$DirN\_NLM\_$p\_$t\_$v
                 FileF=$1\_NLM
 
                 sh GenImg.sh $DB D $DirN NLM $p $t $v
                 sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 5 $p $t $v $1 $2
+                sh GenImg.sh $DB F $DirD $FileF 5 $p $t $v $2
                 sh GenImg.sh DB/$DB\_D/$DirD R 
 
                 for mode in PSNR SNR SSIM RMSE
                 do
-                    rm DB/$DB\_M/{$mode}\_$DirD.txt
+                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
                 done
             done
         done
@@ -315,7 +316,71 @@ Other()
     sh GenImg.sh DB/$DB\_N/$DirN R 
 }
 
-Gaussien 0 1
+RunGaussien()
+{
+    Gaussien 0 1
+    Gaussien 1 1
+    Gaussien 2 1
+
+    Gaussien 0 5
+    Gaussien 0 10
+    Gaussien 0 15
+    Gaussien 0 20
+    Gaussien 0 25
+    Gaussien 0 30
+    Gaussien 0 35
+}
+
+RunPoivreEtSel()
+{
+    Other PES 1 
+    exit
+    Other PES 5
+    Other PES 10 
+    Other PES 15
+    Other PES 20
+    Other PES 25
+    Other PES 30
+    Other PES 35
+}
+
+RunPoisson()
+{
+    Other POI 1 
+    Other POI 5
+    Other POI 10 
+    Other POI 15
+    Other POI 20
+    Other POI 25
+    Other POI 30
+    Other POI 35
+}
+
+RunImpulsif()
+{
+    Other IMP 1 
+    Other IMP 5
+    Other IMP 10 
+    Other IMP 15
+    Other IMP 20
+    Other IMP 25
+    Other IMP 30
+    Other IMP 35
+}
+
+RunSpeckle()
+{
+    Other SPE 1 
+    Other SPE 5
+    Other SPE 10 
+    Other SPE 15
+    Other SPE 20
+    Other SPE 25
+    Other SPE 30
+    Other SPE 35
+}
+
+RunPoivreEtSel 
 
 rm Denoise
 rm Noise

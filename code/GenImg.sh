@@ -85,8 +85,8 @@ elif [ "$2" = "F" ]
 then 
     for mode in PSNR SNR SSIM RMSE
     do
-        txtfileIn="DB/$1_M/{$mode}_$3.txt"
-        txtfileOut="DB/$1_M/{$mode}_$4.txt"
+        txtfileIn="DB/$1_M/$mode/{$mode}_$3.txt"
+        txtfileOut="DB/$1_M/$mode/{$mode}_$4.txt"
 
         tenth_arg=${10}
 
