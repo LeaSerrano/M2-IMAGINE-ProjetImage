@@ -14,11 +14,13 @@ import os
 
 isCudaAvailable = False
 
+
 if torch.cuda.is_available():
     print("CUDA est disponible sur cet ordinateur.")
     isCudaAvailable = True
 else:
     print("CUDA n'est pas disponible sur cet ordinateur. Le code s'exécutera sur le CPU.")
+
 
 def get_weights_and_parameters(task, parameters):
     if task == 'Real_Denoising':
@@ -33,6 +35,7 @@ weights, parameters = get_weights_and_parameters('Real_Denoising', parameters)
 # Load model architecture
 load_arch = run_path(os.path.join('model', 'restormer_arch.py'))
 model = load_arch['Restormer'](**parameters)
+
 if isCudaAvailable == True : 
   model.cuda()
 else : 
@@ -54,33 +57,34 @@ img_multiple_of = 8
 print(f"\n ==> Running Real_Denoising with weights {weights}\n ")
 with torch.no_grad():
   for filepath in tqdm(files):
-      if isCudaAvailable == True : 
-        torch.cuda.ipc_collect()
-        torch.cuda.empty_cache()
-        img = cv2.cvtColor(cv2.imread(filepath), cv2.COLOR_BGR2RGB)
-        input_ = torch.from_numpy(img).float().div(255.).permute(2,0,1).unsqueeze(0).cuda()
-      else : 
-        img = cv2.cvtColor(cv2.imread(filepath), cv2.COLOR_BGR2RGB)
-        input_ = torch.from_numpy(img).float().div(255.).permute(2, 0, 1).unsqueeze(0)
+    
+    if isCudaAvailable == True : 
+      torch.cuda.ipc_collect()
+      torch.cuda.empty_cache()
+      img = cv2.cvtColor(cv2.imread(filepath), cv2.COLOR_BGR2RGB)
+      input_ = torch.from_numpy(img).float().div(255.).permute(2,0,1).unsqueeze(0).cuda()
+    else : 
+      img = cv2.cvtColor(cv2.imread(filepath), cv2.COLOR_BGR2RGB)
+      input_ = torch.from_numpy(img).float().div(255.).permute(2, 0, 1).unsqueeze(0)
 
-      # Pad the input if not_multiple_of 8
-      h,w = input_.shape[2], input_.shape[3]
-      H,W = ((h+img_multiple_of)//img_multiple_of)*img_multiple_of, ((w+img_multiple_of)//img_multiple_of)*img_multiple_of
-      padh = H-h if h%img_multiple_of!=0 else 0
-      padw = W-w if w%img_multiple_of!=0 else 0
-      input_ = F.pad(input_, (0,padw,0,padh), 'reflect')
+    # Pad the input if not_multiple_of 8
+    h,w = input_.shape[2], input_.shape[3]
+    H,W = ((h+img_multiple_of)//img_multiple_of)*img_multiple_of, ((w+img_multiple_of)//img_multiple_of)*img_multiple_of
+    padh = H-h if h%img_multiple_of!=0 else 0
+    padw = W-w if w%img_multiple_of!=0 else 0
+    input_ = F.pad(input_, (0,padw,0,padh), 'reflect')
 
-      restored = model(input_)
-      restored = torch.clamp(restored, 0, 1)
+    restored = model(input_)
+    restored = torch.clamp(restored, 0, 1)
 
-      # Unpad the output
-      restored = restored[:,:,:h,:w]
+    # Unpad the output
+    restored = restored[:,:,:h,:w]
 
-      restored = restored.permute(0, 2, 3, 1).cpu().detach().numpy()
-      restored = img_as_ubyte(restored[0])
+    restored = restored.permute(0, 2, 3, 1).cpu().detach().numpy()
+    restored = img_as_ubyte(restored[0])
 
-      filename = os.path.split(filepath)[-1]
-      cv2.imwrite(os.path.join(out_dir, filename),cv2.cvtColor(restored, cv2.COLOR_RGB2BGR))
+    filename = os.path.split(filepath)[-1]
+    cv2.imwrite(os.path.join(out_dir, filename),cv2.cvtColor(restored, cv2.COLOR_RGB2BGR))
       
-      if not isCudaAvailable:
-        del input_, restored
+    if not isCudaAvailable:
+      del input_, restored
