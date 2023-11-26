@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
     {
         lire_nb_lignes_colonnes_image_ppm(argv[1], &nH1, &nW1);
         allocation_tableau(ImgIn1, OCTET, nH1 * nW1  *3);
-        lire_image_ppm(argv[1], ImgIn1, nH1 * nW1 * 3);
+        lire_image_ppm(argv[1], ImgIn1, nH1 * nW1);
 
         longueur = strlen(argv[2]);
         strcpy(cDernieresLettres, argv[2] + longueur - 3);
