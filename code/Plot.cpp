@@ -26,6 +26,9 @@ int main(int argc, char* argv[])
     float* Val_Args = (float*) malloc( sizeof( float ) * nb_Args );
     int ArgV = -1;
 
+    std::string TmpDatFile("TmpDatFile_" + DB + "_" + TxtFileData);
+    std::string TmpGnuScript("TmpGnuScript_" + DB + "_" + TxtFileData);
+
     for( uint a = 0; a < nb_Args; a++ )
     {
         Nom_Args[a] = std::string( argv[a*2+3] );
@@ -36,7 +39,12 @@ int main(int argc, char* argv[])
             Val_Args[a] = INFINITY;
             ArgV = a;
         }
+
+        TmpDatFile += "_" + Nom_Args[a] + "_" + argv[a*2+4];
+        TmpGnuScript += "_" + Nom_Args[a] + "_" + argv[a*2+4];
     }
+    TmpDatFile += ".dat";
+    TmpGnuScript += ".gnu";
 
     if( ArgV == -1 )
     {
@@ -44,8 +52,6 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    std::string TmpDatFile("TmpDatFile_" + DB + "_" + TxtFileData + ".dat");
-    std::string TmpGnuScript("TmpGnuScript_" + DB + "_" + TxtFileData + ".gnu");
     for( uint i = 0; i < 4; i++ )
     {
         std::string mode( modes[i] );

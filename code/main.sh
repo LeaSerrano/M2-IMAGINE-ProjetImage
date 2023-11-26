@@ -10,7 +10,7 @@ g++ Plot.cpp -o Plot -O3
 }&
 T1=${!}
 { 
-    sh GenData.sh CID22_ppm 
+    echo lol # sh GenData.sh CID22_ppm 
 }&
 T2=${!}
 

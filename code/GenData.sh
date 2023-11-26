@@ -389,7 +389,7 @@ Other()
     }&
     T1=${!}
 
-    { exit   # Filtre Médian
+    { exit # Filtre Médian
     for v in $voisins 
     do
         DirD=$DirN\_MED\_$v
@@ -517,6 +517,13 @@ PlotOther()
     N=$1
     NameArg=$2
     Range=$3
+
+    echo $Range
+
+    for r in $Range
+    do
+        echo $r
+    done
 
     {   # Filtre Moyenneur
     for r in $Range
@@ -682,22 +689,28 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='1 5 10 15 20 25 30 35'
+    Range_prop='0.1'
+    # 0.05 0.10 0.15 0.20 0.25 0.30 0.35'
 
     for prop in $Range_prop
+    do
         Other PES $prop
+    done
 
-    PlotOther PES proportion Range_prop
+    PlotOther PES proportion $Range_prop
 }
+    
 
 RunPoisson()
 {
     Range_moy='1 5 10 15 20 25 30 35'
 
     for moy in $Range_moy
+    do
         Other POI $moy
+    done
 
-    PlotOther POI moyenne_poisson Range_moy
+    PlotOther POI moyenne_poisson $Range_moy
 }
 
 RunImpulsif()
@@ -705,9 +718,11 @@ RunImpulsif()
     Range_fact='1 5 10 15 20 25 30 35'
 
     for fact in $Range_fact
+    do
         Other IMP $fact
+    done
 
-    PlotOther IMP facteur Range_fact
+    PlotOther IMP facteur $Range_fact
 }
 
 RunSpeckle()
@@ -715,13 +730,36 @@ RunSpeckle()
     Range_intens='1 5 10 15 20 25 30 35'
 
     for intens in $Range_intens
+    do
         Other SPE $intens
+    done
 
-    PlotOther SPE intensite Range_intens
+    PlotOther SPE intensite $Range_intens
 }
 
-RunGaussien &
-RunPoivreEtSel &
-RunPoisson &
-RunImpulsif &
-RunSpeckle &
+{
+    RunGaussien 
+}&
+Th1=${!}
+{ 
+    RunPoivreEtSel 
+}&
+Th2=${!}
+{
+    RunPoisson
+}&
+Th3=${!}
+{
+    RunImpulsif
+}&
+Th4=${!}
+{
+    RunSpeckle
+}&
+Th5=${!}
+
+wait ${Th1}
+wait ${Th2}
+wait ${Th3}
+wait ${Th4}
+wait ${Th5}
