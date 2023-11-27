@@ -32,7 +32,7 @@ void get_Mean_Var( std::vector< OCTET > Arr, float& Mean, float& Var )
     for( uint i = 0; i < Arr.size(); i++ )
         var += pow( Arr[i] - mean, 2. );
 
-    var = var / (float) ( Arr.size() - 1 );
+    var = var / (float) Arr.size();
 
     Mean = mean;
     Var = var;
@@ -300,7 +300,7 @@ void Median_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voi
             std::sort( vals.begin(), vals.end() );
             
             float old_val = ImgIn[i*nW+j];
-            float new_val = vals[( round(pow( voisins*2 + 1, 2. )) - 1)/2];
+            float new_val = vals[( pow( voisins*2 + 1, 2. ) - 1)/2];
             
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
@@ -350,9 +350,9 @@ void Median_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             float old_val_R = ImgIn[(i*nW+j)*3];
             float old_val_G = ImgIn[(i*nW+j)*3+1];
             float old_val_B = ImgIn[(i*nW+j)*3+2];
-            float new_val_R = vals_R[(round(pow( voisins*2 + 1, 2. )) - 1)/2];
-            float new_val_G = vals_G[(round(pow( voisins*2 + 1, 2. )) - 1)/2];
-            float new_val_B = vals_B[(round(pow( voisins*2 + 1, 2. )) - 1)/2];
+            float new_val_R = vals_R[(pow( voisins*2 + 1, 2. ) - 1)/2];
+            float new_val_G = vals_G[(pow( voisins*2 + 1, 2. ) - 1)/2];
+            float new_val_B = vals_B[(pow( voisins*2 + 1, 2. ) - 1)/2];
             
             ImgOut[(i*nW+j)*3] = round( clip( intensite*new_val_R + (1.-intensite)*old_val_R, 0., 255. ) );
             ImgOut[(i*nW+j)*3+1] = round( clip( intensite*new_val_G + (1.-intensite)*old_val_G, 0., 255. ) );
@@ -818,7 +818,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
     for( int k = -voisins; k <= voisins; k++ )
         for( int l = -voisins; l <= voisins; l++ )
-            filter_default[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
+            filter[(k+voisins)*nWF+(l+voisins)] = exp( - ( pow( k, 2 ) +  pow( l, 2 )  ) / 2. ) / ( 2. * M_PI );
 
     float* ImgGradF = (float*) malloc( sizeof( float ) * nTaille );
     std::vector<float> vals;

@@ -1,0 +1,111 @@
+-------------------------------- Introduction brève 
+-	Définition bruit + débruitage
+Dans le contexte du traitement d’images, le bruit numérique est une fluctuation parasite ou 
+une dégradation que subit l’image de l’instant de son acquisition jusqu’à son enregistrement. 
+Il est causé par des facteurs physiques tels que la qualité de l’éclairage, de la scène, 
+la température du capteur, la stabilité du capteur de l’image durant l’acquisition, etc1. 
+Le bruit numérique est une notion générale à tout type d’image numérique, et ce quel que soit le type 
+du capteur à l’origine de son acquisition (appareil photo numérique, scanner, caméra thermique, etc.) 
+1. Visuellement, on distingue en général deux types de bruit numérique qui s’accumulent : le bruit de 
+chrominance, qui est la composante colorée des pixels bruités, et le bruit de luminance, qui est la 
+composante lumineuse des pixels bruités 1. Le bruit numérique est généralement considéré comme un sous-produit 
+indésirable de la capture d’image 1.
+
+Le débruitage est une technique d’édition qui consiste à supprimer des éléments indésirables (« bruit ») d’une image, 
+afin de rendre celle-ci plus intelligible ou plus pure 12. Cette technique est utilisée pour améliorer la qualité des 
+images en réduisant le bruit numérique, qui est un phénomène aléatoire qui se produit lors de la capture d’images 3. 
+Le débruitage peut être effectué en utilisant des filtres, des techniques de seuillage, des méthodes de réduction de 
+bruit non-local, ou encore des méthodes de débruitage par patchs 124.
+
+-	Origines du bruit
+Le bruit dans le traitement d’images peut avoir plusieurs origines. Les facteurs environnementaux tels qu’un mauvais 
+éclairage ou des interférences électroniques à proximité peuvent provoquer du bruit dans les images 12. Le bruit peut
+ également être causé par des problèmes avec le capteur utilisé dans les appareils photo et les scanners 134.
+
+-	Pourquoi le débruitage est important 
+Le débruitage est une technique d’édition qui consiste à supprimer des éléments indésirables (« bruit ») d’une image, 
+afin de rendre celle-ci plus intelligible ou plus pure 12. Le bruit dans les images peut avoir plusieurs origines, 
+telles que des facteurs environnementaux, des problèmes avec le capteur utilisé dans les appareils photo et les scanners, 
+etc1 [3][2] 45. Le bruit numérique est un phénomène aléatoire qui se produit lors de la capture d’images 5. Le débruitage 
+est important car il permet d’améliorer la qualité des images en réduisant le bruit numérique, qui peut rendre les images 
+floues ou granuleuses 12. Le débruitage peut être effectué en utilisant des filtres, des techniques de seuillage, des 
+méthodes de réduction de bruit non-local, ou encore des méthodes de débruitage par patchs 124.
+
+-	Résumé du projet 
+
+
+Dans le contexte du traitement d’images, le bruit numérique est une dégradation que subit l’image de l’instant de son acquisition jusqu’à son enregistrement 
+et potentiellement lors de sa transmission dans un réseau. Il se diffère du phénomène de flou car ce dernier est controlé par la stabilité de l'appareil photographiant 
+ou enocre la propreté de la lentille. Il peut être produit, par exemple, un manque de luminosité dans la scène prise en photo, une haute température des 
+capteurs photographiques, une mauvaise qualité des capteurs photographiques ou bien le bruit présent sur un réseau. 
+
+Le bruit génère donc des défaults dans l'image en modifiant à tort la couleurs de certains pixels. Le but du débruitage est d'enlever ces défaults 
+afin d'obtenir une image ressemblant le plus à l'image "en clair" ( c'est-à-dire, l'image souhaitée au départ n'ayant pas de bruit ). 
+Cependant, le débruitage a tendance à flouter l'image bruitée afin d'atténuer les imperfections, ce qui réduit sa qualité. On définit donc les caractéristiques 
+d'une bonne méthode de débruitage : la protection des bordures, la préservation des textures, le lissage des zones uniformes et la non-génération d'avantages de défaults.
+
+Notre projet s'intéresse aux méthodes de débruitage et leur efficacité selon le type de bruit traité. La première méthode implémentée est l'applications de filtres sur l'image
+( deviner la "vraie" valeur d'un pixel selon les valeurs de ses voisins ). Nous nous sommes aussi interessé à implémenter un algorithme fonctionnant cette fois ci par patch, 
+nommé Non-Local Means. Nous avons également utilisé un réseau de neurones. Ce dernier a été entrainé sur des couples d'images ( image "en clair", image bruitée ) afin qu'il 
+puisse prédire, à partir d'une image bruitée, l'image "en clair".
+
+
+
+
+
+
+
+
+-------------------------------- Description du travail effectué ( bullet point )
+-	Type de bruit
+-	Méthodes de débruitages traditionnelles 
+-	Mesure de la qualité du débruitage
+-	Réseau de neurones 
+
+-------------------------------- Description graphique de la pipeline du projet ( avec images d'exemple )
+( bruit, débruitage, mesure )
+
+------------------------------- Approche par réseau de neurones
+-	Présentation réseau de neurones
+Un réseau de neurones est un ensemble d’algorithmes inspirés par le cerveau humain. 
+Le but de cette technologie est de simuler l’activité du cerveau humain, et plus 
+spécifiquement la reconnaissance de motifs et la transmission d’informations entre les 
+différentes couches de connexions neuronales 1234. Les réseaux de neurones permettent aux 
+programmes de reconnaître des modèles et de résoudre des problèmes courants en matière d’intelligence 
+artificielle, d’apprentissage automatique et d’apprentissage en profondeur 1.
+-	Type de réseau
+Le type de réseau de neurones présenté dans ces slides est le Restormer, un modèle de Transformer efficace pour 
+la restauration d’images à haute résolution. Le Restormer utilise des blocs de multi-tête attention et de réseau 
+feed-forward modifiés pour capturer les interactions à longue distance entre les pixels, tout en restant 
+applicable aux grandes images. Le Restormer atteint des résultats de pointe sur plusieurs tâches de restauration 
+d’images, telles que le débruitage, le défloutage, le dépluie et le débrouillage d’images12.
+Non, le réseau de neurones présenté dans ces slides n’est pas un CNN. Il s’agit d’un réseau de neurones récurrents 
+(RNN) qui utilise la technique du restorming pour améliorer la stabilité et la performance du modèle. Le restorming 
+consiste à réinitialiser les états cachés du RNN à chaque pas de temps, en fonction d’un seuil défini par l’utilisateur. 
+Le réseau de neurones récurrents est utilisé pour traiter des séquences de données, comme le texte ou le son, tandis 
+qu’un CNN est utilisé pour traiter des données spatiales, comme les images ou les vidéos.
+Les réseaux de neurones récurrents (RNN) sont des modèles d’apprentissage automatique puissants qui permettent d’analyser 
+des séquences de données, telles que du texte, de la parole ou des séries temporelles1. Ils sont particulièrement utiles 
+pour les tâches où les données d’entrée et de sortie peuvent être de longueurs différentes1.
+
+Un RNN fonctionne en utilisant des “cellules” qui stockent des informations dans leur “mémoire” interne2. 
+À chaque étape de traitement, la cellule prend une entrée et calcule une sortie en utilisant l’entrée 
+actuelle et l’état de mémoire précédent2. Cela permet au RNN de “se souvenir” des informations passées et 
+de les utiliser pour prendre des décisions en temps réel1.
+
+Par exemple, si nous voulons prédire la trajectoire d’une balle, nous pouvons donner à notre RNN les anciens 
+déplacements de la balle. Le RNN prendra en compte ces informations pour prédire le prochain mouvement de la balle1.
+
+Cependant, il y a deux problèmes principaux avec les RNNs traditionnels :
+
+La taille de nos échantillons d’entrée qui n’est pas fixe1.
+Les données d’entrées ne sont pas liées entre elles1.
+Pour résoudre ces problèmes, des variantes de RNN ont été développées, comme les réseaux de neurones récurrents à longue 
+mémoire (LSTM) et les réseaux de neurones récurrents à portes (GRU), qui sont capables de capturer des dépendances à long 
+terme dans les données3.
+-	Description graphique du réseau
+
+-------------------------------- Conclusions
+-	Meilleures méthodes et paramètres
+-	Graphe des meilleurs résultats trouvés
+-	Promotion logiciel

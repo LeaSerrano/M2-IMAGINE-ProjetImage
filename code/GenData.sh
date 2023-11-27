@@ -7,7 +7,7 @@ voisinsNLM='1 2 3 4'
 mean_GAU='0'
 var_GAU='1 5 10 15 20 25 30 35'
 
-puissance='0.5 0.7 0.9 1 1.1 1.3 1.5'
+puissance='0.5 0.7 0.9 1 1.1 1.3 1.5 1.7'
 
 ponderation='0.25 0.5 0.75'
 tailleRecherche='10 20 30'
@@ -389,7 +389,7 @@ Other()
     }&
     T1=${!}
 
-    { exit # Filtre Médian
+    { # Filtre Médian
     for v in $voisins 
     do
         DirD=$DirN\_MED\_$v
@@ -408,7 +408,7 @@ Other()
     }&
     T2=${!}
 
-    { exit # Filtre Gaussien
+    { # Filtre Gaussien
     for v in $voisins 
     do
         for mean in $mean_GAU
@@ -433,7 +433,7 @@ Other()
     }&
     T3=${!}
 
-    { exit # Filtre Gradient 
+    { # Filtre Gradient 
     for v in $voisins 
     do
         for c in 0 1 
@@ -455,7 +455,7 @@ Other()
     }&
     T4=${!}
 
-    { exit # Filtre Pondéré
+    { # Filtre Pondéré
     for v in $voisins 
     do
         for p in $puissance
@@ -477,7 +477,7 @@ Other()
     }&
     T5=${!}
 
-    { exit # Non Local Mean
+    { # Non Local Mean
     for p in $ponderation
     do
         for t in $tailleRecherche
@@ -517,13 +517,6 @@ PlotOther()
     N=$1
     NameArg=$2
     Range=$3
-
-    echo $Range
-
-    for r in $Range
-    do
-        echo $r
-    done
 
     {   # Filtre Moyenneur
     for r in $Range
@@ -689,8 +682,7 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='0.1'
-    # 0.05 0.10 0.15 0.20 0.25 0.30 0.35'
+    Range_prop='0.05 0.10 0.15 0.20 0.25 0.30 0.35'
 
     for prop in $Range_prop
     do
