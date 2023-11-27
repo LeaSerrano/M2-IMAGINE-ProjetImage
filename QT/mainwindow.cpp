@@ -7,14 +7,20 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QPixmap logoPixmap(":/stylesheet/logo.png");
-    logoPixmap = logoPixmap.scaled(logoPixmap.width() * 2, logoPixmap.height() * 2);
-    ui->logoLabel->setPixmap(logoPixmap);
-    ui->logoLabel->setAlignment(Qt::AlignCenter);
+    //QPixmap logoPixmap(":/stylesheet/logo.png");
+    //logoPixmap = logoPixmap.scaled(logoPixmap.width() * 2, logoPixmap.height() * 2);
+    //ui->logoLabel->setPixmap(logoPixmap);
+    //ui->logoLabel->setAlignment(Qt::AlignCenter);
 
     ui->fond_image_1->setStyleSheet("background-color: #071247; border-radius: 30px;");
     ui->fond_image_2->setStyleSheet("background-color: #071247; border-radius: 30px;");
     ui->fond_image_3->setStyleSheet("background-color: #071247; border-radius: 30px;");
+
+    connect(ui->select_algo, SIGNAL(currentIndexChanged(int)), this, SLOT(onAlgoSelected(int)));
+
+    //On cache les paramètres pour les bruits
+    ui->select_1_bruit->hide();
+    ui->select_2_bruit->hide();
 }
 
 MainWindow::~MainWindow()
@@ -66,11 +72,9 @@ void downloadAs(const QString& inputFilePath, const QString& outputFilePath, con
         image.save(outputFilePath, "JPG");
 }
 
-
-
 void MainWindow::on_load_button_clicked()
 {
-    init_filename = QFileDialog::getOpenFileName(this, tr("Sélectionner une image"), "", tr("Fichiers image (*.png *.jpg *.jpeg *.ppm)"));
+    init_filename = QFileDialog::getOpenFileName(this, tr("Sélectionner une image"), "", tr("Fichiers image (*.png *.jpg *.jpeg *.ppm *.pgm)"));
     if (!init_filename.isEmpty()) {
         QPixmap image(init_filename);
         if (!image.isNull()) {
@@ -83,6 +87,46 @@ void MainWindow::on_load_button_clicked()
         qDebug() << "Impossible de sélectionner le fichier";
     }
 }
+
+void MainWindow::onAlgoSelected(int index)
+{
+    // Récupérez le texte de l'élément sélectionné dans le QComboBox
+    QString selectedAlgo = ui->select_algo->itemText(index);
+
+    // Affichez ou masquez le QSpinBox en fonction de la sélection
+    if (selectedAlgo == "GAUSSIEN") {
+        ui->label_1_bruit->setText("Moyenne");
+        ui->label_2_bruit->show();
+        ui->label_2_bruit->setText("Ecart-type");
+        ui->select_1_bruit->show();
+        ui->select_2_bruit->show();
+
+    } else if (selectedAlgo == "IMPULSIF") {
+        ui->label_1_bruit->setText("Facteur");
+        ui->label_2_bruit->hide();
+        ui->select_1_bruit->show();
+        ui->select_2_bruit->hide();
+    }
+    else if (selectedAlgo == "POISSON") {
+        ui->label_1_bruit->setText("Moyenne");
+        ui->label_2_bruit->hide();
+        ui->select_1_bruit->show();
+        ui->select_2_bruit->hide();
+    }
+    else if (selectedAlgo == "POIVRE SEL") {
+        ui->label_1_bruit->setText("Proportion");
+        ui->label_2_bruit->hide();
+        ui->select_1_bruit->show();
+        ui->select_2_bruit->hide();
+    }
+    else if (selectedAlgo == "SPECKLE") {
+        ui->label_1_bruit->setText("Intensité");
+        ui->label_2_bruit->hide();
+        ui->select_1_bruit->show();
+        ui->select_2_bruit->hide();
+    }
+}
+
 
 void MainWindow::on_submit_button_clicked()
 {
@@ -97,7 +141,7 @@ void MainWindow::on_submit_button_clicked()
         return;
     }
 
-    int KX = ui->select_KX->value();
+    /*int KX = ui->select_KX->value();
     int KY = ui->select_KY->value();
     int M = ui->select_M->value();
     int SEUIL = ui->select_SEUIL->value();
@@ -124,7 +168,7 @@ void MainWindow::on_submit_button_clicked()
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
         ui->seg_label->setPixmap(scaledImage);
-    }
+    }*/
 
 }
 
@@ -191,14 +235,14 @@ void MainWindow::on_compress_button_clicked()
         return;
     }
 
-    int KX = ui->select_KX->value();
+    /*int KX = ui->select_KX->value();
     int KY = ui->select_KY->value();
     int M = ui->select_M->value();
     int SEUIL = ui->select_SEUIL->value();
     if (KX == 0 || KY == 0 || M == 0) {
         QMessageBox::warning(this, "Erreur", "Veuillez sélectionner des valeurs valides (supérieures à 0) !");
         return;
-    }
+    }*/
 
     QFile img_base(app_folder.filePath("../init_pic.ppm"));
     float size_before = img_base.size();
@@ -207,7 +251,7 @@ void MainWindow::on_compress_button_clicked()
     QString selected_compress = ui->select_comp->currentText();
     if (selected_compress == "Palette couleur (256)")
     {
-        if ((KX * KY) > 256) {
+        /*if ((KX * KY) > 256) {
             QMessageBox::warning(this, "Erreur", "Utilisation de cet algorithme de compression impossible avec les valeurs passées actuelles !");
             return;
         }
@@ -217,14 +261,14 @@ void MainWindow::on_compress_button_clicked()
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "256");
-        }
+        }*/
         QFile img_index1(app_folder.filePath("../index.pgm"));
         QFile img_palette(app_folder.filePath("../palette.ppm"));
         size_after = img_index1.size() + img_palette.size();
     }
     if (selected_compress == "Palette couleur (65536)")
     {
-        if ((KX * KY) > 65536) {
+        /*if ((KX * KY) > 65536) {
             QMessageBox::warning(this, "Erreur", "Utilisation de cet algorithme de compression impossible avec les valeurs passées actuelles !");
             return;
         }
@@ -234,7 +278,7 @@ void MainWindow::on_compress_button_clicked()
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "65536");
-        }
+        }*/
 
         QFile img_index1(app_folder.filePath("../index.pgm"));
         QFile img_index2(app_folder.filePath("../indexbis.pgm"));
@@ -243,12 +287,12 @@ void MainWindow::on_compress_button_clicked()
     }
     if (selected_compress == "Fichier texte")
     {
-        if (selected_algo == "SLIC") {
+        /*if (selected_algo == "SLIC") {
             compute_SLIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, SEUIL, M, "txt");
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "txt");
-        }
+        }*/
 
         QFile txt_file(app_folder.filePath("../comp_res.txt"));
         size_after = txt_file.size();
