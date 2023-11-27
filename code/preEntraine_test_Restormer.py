@@ -46,8 +46,8 @@ checkpoint = torch.load(weights)
 model.load_state_dict(checkpoint['params'])
 model.eval()
 
-input_dir = 'BD_test'
-out_dir = 'BD_result'
+input_dir = sys.argv[1]
+out_dir = sys.argv[2]
 os.makedirs(out_dir, exist_ok=True)
 extensions = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG', 'bmp', 'BMP']
 files = natsorted(glob(os.path.join(input_dir, '*')))

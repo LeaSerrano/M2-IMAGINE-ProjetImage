@@ -833,7 +833,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
     std::sort( vals.begin(), vals.end() );
     
-    float Seuil = vals[ nTaille/2 ];
+    float Seuil = round( vals[ nTaille/2 ] );
 
     for (int i = 0; i < nH-1; i++) 
         for (int j = 0; j < nW-1; j++) 
@@ -896,7 +896,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
                     for( int k = -1; k <= 1; k++ )
                         for( int l = -1; l <= 1; l++ )
-                            if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                            if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW && ( l != 0 || k != 0 ) )
                             {
                                 pixel_sum += ImgIn[(i+k)*nW+(j+l)];
                                 nb_vois_att++;
@@ -911,7 +911,7 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
 
                     for( int k = -1; k <= 1; k++ )
                         for( int l = -1; l <= 1; l++ )
-                            if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                            if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW && ( l != 0 || k != 0 ) )
                             {
                                 new_val += ImgIn[(i+k)*nW+(j+l)] * filter_default[(k+1)*3+(l+1)];
                                 total_weight += filter_default[(k+1)*3+(l+1)];
@@ -1002,9 +1002,9 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
     for( uint d = 0; d < 3; d++ )
         std::sort( vals[d].begin(), vals[d].end() );
     
-    float SeuilR = vals[0][ nTaille/6 ];
-    float SeuilG = vals[1][ nTaille/6 ];
-    float SeuilB = vals[2][ nTaille/6 ];
+    float SeuilR = round( vals[0][ vals[0].size()/2 ] );
+    float SeuilG = round( vals[1][ vals[1].size()/2 ] );
+    float SeuilB = round( vals[2][ vals[2].size()/2 ] );
 
     for (int i = 0; i < nH-1; i++) 
         for (int j = 0; j < nW-1; j++) 
@@ -1072,7 +1072,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
 
                         for( int k = -1; k <= 1; k++ )
                             for( int l = -1; l <= 1; l++ )
-                                if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                                if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW && ( l != 0 || k != 0 ) )
                                 {
                                     pixel_sum += ImgIn[((i+k)*nW+(j+l))*3+d];
                                     nb_vois_att++;
@@ -1087,7 +1087,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
 
                         for( int k = -1; k <= 1; k++ )
                             for( int l = -1; l <= 1; l++ )
-                                if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW )
+                                if( (i+k) >= 0 && (i+k) < nH && (j+l) >= 0 && (j+l) < nW && ( l != 0 || k != 0 ) )
                                 {
                                     new_val += ImgIn[((i+k)*nW+(j+l))*3+d] * filter_default[(k+1)*3+(l+1)];
                                     total_weight += filter_default[(k+1)*3+(l+1)];
@@ -1124,7 +1124,7 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
                     new_val = moy;
                 }
 
-                ImgOut[(i*nW+j)*3+d] = ImgGrad[(i*nW+j)*3+d];//round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
+                ImgOut[(i*nW+j)*3+d] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
             }
 
     char cNomImgEcrite[250];
