@@ -1,11 +1,11 @@
 
 DB=$1
 
-voisins='1 2 3 4'
-voisinsNLM='1 2 3'
+voisins='1 2 3 4 5'
+voisinsNLM='1 2 3 4'
 
 mean_GAU='0'
-var_GAU='5 15 25 35'
+var_GAU='2.5 7.5 10 20'
 
 puissance='0.5 0.7 1 1.3 1.5 1.7 2'
 
@@ -16,42 +16,6 @@ Gaussien()
 {
     sh GenImg.sh $DB N GAU $1 $2
     DirN=GAU\_$1\_$2
-
-      # Filtre Moyenneur
-    for v in $voisins 
-    do
-        DirD=$DirN\_MOY\_$v
-        FileF=GAU_MOY
-
-        sh GenImg.sh $DB D $DirN MOY $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-   # Filtre Médian
-    for v in $voisins 
-    do
-        DirD=$DirN\_MED\_$v
-        FileF=GAU_MED
-
-        sh GenImg.sh $DB D $DirN MED $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
 
      # Filtre Gaussien
     for v in $voisins 
@@ -76,81 +40,19 @@ Gaussien()
         done
     done
     
-
-     # Filtre Gradient 
-    for v in $voisins 
-    do
-        for c in 0 1 
-        do
-            DirD=$DirN\_GRA\_$v\_$c
-            FileF=GAU_GRA
-
-            sh GenImg.sh $DB D $DirN GRA $v $c
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $c $1 $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Filtre Pondéré
-    for v in $voisins 
-    do
-        for p in $puissance
-        do
-            DirD=$DirN\_PON\_$v\_$p
-            FileF=GAU_PON
-
-            sh GenImg.sh $DB D $DirN PON $v $p
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $p $1 $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Non Local Mean
-    for p in $ponderation
-    do
-        for t in $tailleRecherche
-        do
-            for v in $voisinsNLM 
-            do
-                DirD=$DirN\_NLM\_$p\_$t\_$v
-                FileF=GAU_NLM
-
-                sh GenImg.sh $DB D $DirN NLM $p $t $v
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 5 $p $t $v $1 $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
-
     sh GenImg.sh DB/$DB\_N/$DirN R 
 }
 
 RunGaussien()
 {
     Range_Mean='0 1 2'
-    Range_STD='10 20'
+    Range_STD='2.5 5 7.5 10 15 20 25 35'
 
+    for m in $Range_Mean
+    do
+        Gaussien $m 1
+    done
+    
     for std in $Range_STD
     do
         Gaussien 0 $std
@@ -340,43 +242,6 @@ Other()
     sh GenImg.sh $DB N $1 $2
     DirN=$1\_$2
 
-    
-      # Filtre Moyenneur
-    for v in $voisins 
-    do
-        DirD=$DirN\_MOY\_$v
-        FileF=$1\_MOY
-
-        sh GenImg.sh $DB D $DirN MOY $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 2 $v $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-     # Filtre Médian
-    for v in $voisins 
-    do
-        DirD=$DirN\_MED\_$v
-        FileF=$1\_MED
-
-        sh GenImg.sh $DB D $DirN MED $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 2 $v $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
      # Filtre Gaussien
     for v in $voisins 
     do
@@ -399,73 +264,6 @@ Other()
             done
         done
     done
-    
-
-    # Filtre Gradient 
-    for v in $voisins 
-    do
-        for c in 0 1 
-        do
-            DirD=$DirN\_GRA\_$v\_$c
-            FileF=$1\_GRA
-
-            sh GenImg.sh $DB D $DirN GRA $v $c
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 3 $v $c $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Filtre Pondéré
-    for v in $voisins 
-    do
-        for p in $puissance
-        do
-            DirD=$DirN\_PON\_$v\_$p
-            FileF=$1\_PON
-
-            sh GenImg.sh $DB D $DirN PON $v $p
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 3 $v $p $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Non Local Mean
-    for p in $ponderation
-    do
-        for t in $tailleRecherche
-        do
-            for v in $voisinsNLM 
-            do
-                DirD=$DirN\_NLM\_$p\_$t\_$v
-                FileF=$1\_NLM
-
-                sh GenImg.sh $DB D $DirN NLM $p $t $v
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 4 $p $t $v $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
 
     sh GenImg.sh DB/$DB\_N/$DirN R 
 }
@@ -625,7 +423,7 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='0.1 0.2'
+    Range_prop='0.025 0.05 0.075 0.1 0.15 0.2 0.25 0.35'
 
     for prop in $Range_prop
     do
@@ -638,7 +436,7 @@ RunPoivreEtSel()
 
 RunPoisson()
 {
-    Range_moy='10 20'
+    Range_moy='2.5 5 7.5 10 15 20 25 35'
 
     for moy in $Range_moy
     do
@@ -650,7 +448,7 @@ RunPoisson()
 
 RunImpulsif()
 {
-    Range_fact='10 20'
+    Range_fact='2.5 5 7.5 10 15 20 25 35'
 
     for fact in $Range_fact
     do
@@ -662,7 +460,7 @@ RunImpulsif()
 
 RunSpeckle()
 {
-    Range_intens='10 20'
+    Range_intens='2.5 5 7.5 10 15 20 25 35'
 
     for intens in $Range_intens
     do
@@ -672,9 +470,18 @@ RunSpeckle()
     # PlotOther SPE intensite $Range_intens
 }
 
-RunGaussien 
-RunImpulsif 
-RunPoivreEtSel 
-RunPoisson 
-RunSpeckle 
+if [ "$2" = "GAU" ]
+then
+    RunGaussien 
+fi
+if [ "$2" = "IMP_PES" ]
+then
+    RunImpulsif 
+    RunPoivreEtSel 
+fi
+if [ "$2" = "POI_SPE" ]
+then
+    RunPoisson 
+    RunSpeckle 
+fi
 

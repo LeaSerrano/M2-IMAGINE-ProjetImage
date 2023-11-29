@@ -149,7 +149,7 @@ Gaussien()
 RunGaussien()
 {
     Range_Mean='0 1 2'
-    Range_STD='5 10 15 20 25 35'
+    Range_STD='2.5 5 7.5 10 15 20 25 35'
 
     for m in $Range_Mean
     do
@@ -630,7 +630,7 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='0.05 0.1 0.15 0.2 0.25 0.35'
+    Range_prop='0.025 0.05 0.075 0.1 0.15 0.2 0.25 0.35'
 
     for prop in $Range_prop
     do
@@ -643,7 +643,7 @@ RunPoivreEtSel()
 
 RunPoisson()
 {
-    Range_moy='5 10 15 20 25 35'
+    Range_moy='2.5 5 7.5 10 15 20 25 35'
 
     for moy in $Range_moy
     do
@@ -655,7 +655,7 @@ RunPoisson()
 
 RunImpulsif()
 {
-    Range_fact='5 10 15 20 25 35'
+    Range_fact='2.5 5 7.5 10 15 20 25 35'
 
     for fact in $Range_fact
     do
@@ -667,7 +667,7 @@ RunImpulsif()
 
 RunSpeckle()
 {
-    Range_intens='5 10 15 20 25 35'
+    Range_intens='2.5 5 7.5 10 15 20 25 35'
 
     for intens in $Range_intens
     do
@@ -677,9 +677,18 @@ RunSpeckle()
     # PlotOther SPE intensite $Range_intens
 }
 
-RunGaussien 
-RunImpulsif 
-RunPoivreEtSel 
-RunPoisson 
-RunSpeckle 
+if [ "$2" = "GAU" ]
+then
+    RunGaussien 
+fi
+if [ "$2" = "IMP_PES" ]
+then
+    RunImpulsif 
+    RunPoivreEtSel 
+fi
+if [ "$2" = "POI_SPE" ]
+then
+    RunPoisson 
+    RunSpeckle 
+fi
 

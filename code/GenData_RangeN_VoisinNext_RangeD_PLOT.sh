@@ -5,7 +5,7 @@ voisins='1 2 3 4 5'
 voisinsNLM='1 2 3 4'
 
 mean_GAU='0'
-var_GAU='5 10 15 20 25 35'
+var_GAU='2.5 5 7.5 10 15 20 25 35'
 
 puissance='0.5 0.7 1 1.3 1.5 1.7 2'
 
@@ -149,7 +149,7 @@ Gaussien()
 RunGaussien()
 {
     Range_Mean='0 1 2'
-    Range_STD='5 10 15 20 25 35'
+    Range_STD='2.5 5 7.5 10 15 20 25 35'
 
        # Filtre Moyenneur
     for m in $Range_Mean
@@ -618,7 +618,7 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='0.05 0.1 0.15 0.2 0.25 0.35'
+    Range_prop='0.025 0.05 0.075 0.1 0.15 0.2 0.25 0.35'
     PlotOther PES proportion $Range_prop
     exit
 
@@ -626,12 +626,14 @@ RunPoivreEtSel()
     do
         Other PES $prop
     done
+
+    # PlotOther PES proportion $Range_prop
 }
     
 
 RunPoisson()
 {
-    Range_moy='5 10 15 20 25 35'
+    Range_moy='2.5 5 7.5 10 15 20 25 35'
     PlotOther POI moyenne_poisson $Range_moy
     exit
 
@@ -645,7 +647,7 @@ RunPoisson()
 
 RunImpulsif()
 {
-    Range_fact='5 10 15 20 25 35'
+    Range_fact='2.5 5 7.5 10 15 20 25 35'
     PlotOther IMP facteur $Range_fact
     exit
 
@@ -659,7 +661,7 @@ RunImpulsif()
 
 RunSpeckle()
 {
-    Range_intens='5 10 15 20 25 35'
+    Range_intens='2.5 5 7.5 10 15 20 25 35'
     PlotOther SPE intensite $Range_intens
     exit
 
@@ -671,9 +673,18 @@ RunSpeckle()
     # PlotOther SPE intensite $Range_intens
 }
 
-RunGaussien 
-RunImpulsif 
-RunPoivreEtSel 
-RunPoisson 
-RunSpeckle 
+if [ "$2" = "GAU" ]
+then
+    RunGaussien 
+fi
+if [ "$2" = "IMP_PES" ]
+then
+    RunImpulsif 
+    RunPoivreEtSel 
+fi
+if [ "$2" = "POI_SPE" ]
+then
+    RunPoisson 
+    RunSpeckle 
+fi
 
