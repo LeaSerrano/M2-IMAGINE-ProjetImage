@@ -3,5 +3,9 @@
         <file>stylesheet.qss</file>
         <file>logo.png</file>
         <file>background.png</file>
+        <file>download_icon_white.png</file>
+        <file>download_icon_black.png</file>
+        <file>upload_icon_black.png</file>
+        <file>upload_icon_white.png</file>
     </qresource>
 </RCC>
