@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
         gnuplotScript << "set title '" << PlotTitle << "'\n";
         gnuplotScript << "set xlabel '" << Nom_Args[ArgV] <<"'\n";
         gnuplotScript << "set ylabel '" << mode << "'\n";
-        gnuplotScript << "plot '" << TmpDatFile <<"'  using 3:1:2 with labels font \",9\" notitle, '" << TmpDatFile <<"' using 3:1 with lines lt rgb '"<< color << "' notitle\n";
+        gnuplotScript << "plot '" << TmpDatFile <<"'  using 3:1:2 with labels font \",9\" notitle, '" << TmpDatFile <<"' using 3:1 smooth unique with lines lt rgb '"<< color << "' notitle\n";
         gnuplotScript.close();
 
         system( std::string("gnuplot -p " + TmpGnuScript ).c_str() );
