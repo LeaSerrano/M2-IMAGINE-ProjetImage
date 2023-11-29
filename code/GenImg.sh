@@ -17,7 +17,7 @@ then
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
-            ./Noise $ImgInLoc $eachfile $ImgOutLoc $3 $4 $5 ;
+            ./Noise $ImgInLoc $eachfile $ImgOutLoc $3 $4 $5 
         done
     elif [ "$3" = "IMP" ] || [ "$3" = "PES" ] || [ "$3" = "POI" ] || [ "$3" = "SPE" ] 
     then
@@ -27,7 +27,7 @@ then
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
-            ./Noise $ImgInLoc $eachfile $ImgOutLoc $3 $4 ;
+            ./Noise $ImgInLoc $eachfile $ImgOutLoc $3 $4 
         done
     fi
 
@@ -42,7 +42,7 @@ then
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
-            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 ;
+            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 
         done
     elif [ "$4" = "WIE" ] || [ "$4" = "FOU" ] || [ "$4" = "GRA" ] || [ "$4" = "PON" ]
     then
@@ -53,7 +53,7 @@ then
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
-            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 $6 ;
+            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 $6 
         done
     elif [ "$4" = "GAU" ] || [ "$4" = "NLM" ]
     then
@@ -64,7 +64,7 @@ then
         ImgsIn=`ls $ImgInLoc`
         for eachfile in $ImgsIn
         do
-            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 $6 $7 ;
+            ./Denoise $ImgInLoc $eachfile $ImgOutLoc $4 $5 $6 $7 
         done
     fi
 elif [ "$2" = "M" ] 
