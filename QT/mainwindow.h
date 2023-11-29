@@ -31,6 +31,7 @@ public slots:
     void on_select_indexbis_clicked();
     void on_select_txt_clicked();
     void on_decomp_button_clicked();
+    void onAlgoSelected(int index);
 
 private:
     Ui::MainWindow *ui;

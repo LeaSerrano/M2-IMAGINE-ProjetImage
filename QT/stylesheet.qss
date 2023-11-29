@@ -1,8 +1,8 @@
 QMainWindow {
-        background-color:#151a1e;
+        background-color:#f1f0ea
 }
 QCalendar {
-        background-color: #151a1e;
+        background-color: #f1f0ea;
 }
 QTextEdit {
         border-width: 1px;
@@ -110,7 +110,7 @@ QLineEdit {
         color: #d3dae3;
 }
 QLabel {
-        color: #d3dae3;
+        color: #000000;
 }
 QLCDNumber {
         color: #4d9b87;

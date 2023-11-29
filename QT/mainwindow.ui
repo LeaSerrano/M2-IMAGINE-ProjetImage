@@ -17,9 +17,9 @@
    <widget class="QPushButton" name="load_button">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>100</x>
       <y>450</y>
-      <width>111</width>
+      <width>141</width>
       <height>24</height>
      </rect>
     </property>
@@ -56,29 +56,34 @@
     </item>
     <item>
      <property name="text">
-      <string>SLIC</string>
+      <string>GAUSSIEN</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>SNIC</string>
+      <string>IMPULSIF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>POISSON</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>POIVRE SEL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SPECKLE</string>
      </property>
     </item>
    </widget>
-   <widget class="QSpinBox" name="select_KX">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>250</y>
-      <width>111</width>
-      <height>25</height>
-     </rect>
+   <widget class="QDoubleSpinBox" name="select_2_bruit">
+    <property name="enabled">
+     <bool>true</bool>
     </property>
-    <property name="maximum">
-     <number>9999</number>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="select_KY">
     <property name="geometry">
      <rect>
       <x>510</x>
@@ -87,8 +92,8 @@
       <height>25</height>
      </rect>
     </property>
-    <property name="maximum">
-     <number>9999</number>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
     </property>
    </widget>
    <widget class="QFrame" name="start_frame">
@@ -142,20 +147,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Segmenter</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="select_M">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>310</y>
-      <width>111</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>9999</number>
+     <string>Bruiter</string>
     </property>
    </widget>
    <widget class="QFrame" name="seg_frame">
@@ -198,19 +190,6 @@
     </widget>
     <zorder>fond_image_2</zorder>
     <zorder>seg_label</zorder>
-   </widget>
-   <widget class="QSpinBox" name="select_SEUIL">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>340</y>
-      <width>111</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>9999</number>
-    </property>
    </widget>
    <widget class="QComboBox" name="select_comp">
     <property name="geometry">
@@ -518,72 +497,39 @@
      </rect>
     </property>
     <property name="text">
-     <string>Algorithme de segmentation :</string>
+     <string>Algorithme de bruitage :</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="label_1_bruit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>220</y>
-      <width>61</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Superpixels</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
+      <x>420</x>
       <y>250</y>
-      <width>121</width>
-      <height>16</height>
+      <width>71</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Nombre à l'horizontal :</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_9">
+   <widget class="QLabel" name="label_2_bruit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>420</x>
       <y>280</y>
-      <width>121</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Nombre à la verticale :</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_10">
-    <property name="geometry">
-     <rect>
-      <x>471</x>
-      <y>310</y>
-      <width>20</width>
+      <width>71</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>M :</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_11">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>340</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Seuil :</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="logoLabel">
@@ -666,6 +612,22 @@
      <string>Télécharger</string>
     </property>
    </widget>
+   <widget class="QDoubleSpinBox" name="select_1_bruit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>250</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -673,7 +635,7 @@
      <x>0</x>
      <y>0</y>
      <width>1472</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
