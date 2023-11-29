@@ -14,25 +14,12 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="load_button">
+   <widget class="QPushButton" name="download_button_2">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>450</y>
-      <width>141</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Charger une image</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="download_button">
-    <property name="geometry">
-     <rect>
-      <x>1280</x>
-      <y>670</y>
-      <width>80</width>
+      <x>1260</x>
+      <y>690</y>
+      <width>111</width>
       <height>24</height>
      </rect>
     </property>
@@ -43,8 +30,8 @@
    <widget class="QComboBox" name="select_algo">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>180</y>
+      <x>750</x>
+      <y>190</y>
       <width>111</width>
       <height>24</height>
      </rect>
@@ -86,8 +73,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>280</y>
+      <x>750</x>
+      <y>270</y>
       <width>111</width>
       <height>25</height>
      </rect>
@@ -96,149 +83,11 @@
      <double>0.500000000000000</double>
     </property>
    </widget>
-   <widget class="QFrame" name="start_frame">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>140</y>
-      <width>300</width>
-      <height>300</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QLabel" name="start_label">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>300</width>
-       <height>300</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QWidget" name="fond_image_1" native="true">
-     <property name="geometry">
-      <rect>
-       <x>-10</x>
-       <y>-10</y>
-       <width>321</width>
-       <height>321</height>
-      </rect>
-     </property>
-    </widget>
-    <zorder>fond_image_1</zorder>
-    <zorder>start_label</zorder>
-   </widget>
-   <widget class="QPushButton" name="submit_button">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>390</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Bruiter</string>
-    </property>
-   </widget>
-   <widget class="QFrame" name="seg_frame">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>140</y>
-      <width>300</width>
-      <height>300</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QLabel" name="seg_label">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>300</width>
-       <height>300</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QWidget" name="fond_image_2" native="true">
-     <property name="geometry">
-      <rect>
-       <x>-10</x>
-       <y>-10</y>
-       <width>321</width>
-       <height>321</height>
-      </rect>
-     </property>
-    </widget>
-    <zorder>fond_image_2</zorder>
-    <zorder>seg_label</zorder>
-   </widget>
-   <widget class="QComboBox" name="select_comp">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>450</y>
-      <width>191</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string/>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Palette couleur (256)</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Palette couleur (65536)</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Fichier texte</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QPushButton" name="compress_button">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>500</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Compresser</string>
-    </property>
-   </widget>
    <widget class="QFrame" name="decomp_frame">
     <property name="geometry">
      <rect>
       <x>1100</x>
-      <y>290</y>
+      <y>370</y>
       <width>300</width>
       <height>300</height>
      </rect>
@@ -304,58 +153,6 @@
       <string>Fichier texte</string>
      </property>
     </item>
-   </widget>
-   <widget class="QLabel" name="pal_path">
-    <property name="geometry">
-     <rect>
-      <x>1180</x>
-      <y>130</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="index_path">
-    <property name="geometry">
-     <rect>
-      <x>1180</x>
-      <y>160</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="text_path">
-    <property name="geometry">
-     <rect>
-      <x>1180</x>
-      <y>220</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="indexbis_path">
-    <property name="geometry">
-     <rect>
-      <x>1180</x>
-      <y>190</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
    </widget>
    <widget class="QPushButton" name="select_pal">
     <property name="geometry">
@@ -474,24 +271,11 @@
      <string>Décompresser</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>450</y>
-      <width>161</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Algorithme de compression :</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>160</y>
+      <x>580</x>
+      <y>170</y>
       <width>161</width>
       <height>61</height>
      </rect>
@@ -506,10 +290,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>250</y>
-      <width>71</width>
-      <height>20</height>
+      <x>650</x>
+      <y>240</y>
+      <width>81</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -522,10 +306,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>280</y>
-      <width>71</width>
-      <height>20</height>
+      <x>650</x>
+      <y>270</y>
+      <width>81</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -536,13 +320,13 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>0</y>
+      <y>10</y>
       <width>831</width>
       <height>81</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>DENOISEPRO</string>
     </property>
    </widget>
    <widget class="QLabel" name="PSNR_label">
@@ -561,24 +345,11 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="taux_label">
+   <widget class="QComboBox" name="select_format2">
     <property name="geometry">
      <rect>
-      <x>638</x>
-      <y>530</y>
-      <width>301</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="select_format">
-    <property name="geometry">
-     <rect>
-      <x>1130</x>
-      <y>670</y>
+      <x>1140</x>
+      <y>690</y>
       <width>91</width>
       <height>24</height>
      </rect>
@@ -599,27 +370,14 @@
      </property>
     </item>
    </widget>
-   <widget class="QPushButton" name="download_comp_button">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>560</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Télécharger</string>
-    </property>
-   </widget>
    <widget class="QDoubleSpinBox" name="select_1_bruit">
     <property name="enabled">
      <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>250</y>
+      <x>750</x>
+      <y>240</y>
       <width>111</width>
       <height>25</height>
      </rect>
@@ -628,6 +386,227 @@
      <double>0.500000000000000</double>
     </property>
    </widget>
+   <widget class="QFrame" name="frame_1">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>461</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QFrame" name="start_frame">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>100</y>
+       <width>300</width>
+       <height>300</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="start_label">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>300</width>
+        <height>300</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="fond_image_1" native="true">
+      <property name="geometry">
+       <rect>
+        <x>-10</x>
+        <y>-10</y>
+        <width>321</width>
+        <height>321</height>
+       </rect>
+      </property>
+     </widget>
+     <zorder>fond_image_1</zorder>
+     <zorder>start_label</zorder>
+    </widget>
+    <widget class="QPushButton" name="upload_button">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>70</y>
+       <width>30</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>505</x>
+      <y>130</y>
+      <width>461</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="submit_button">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>190</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Bruiter</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="seg_frame">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>250</y>
+       <width>300</width>
+       <height>300</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="seg_label">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>300</width>
+        <height>300</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="fond_image_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>-10</x>
+        <y>-10</y>
+        <width>321</width>
+        <height>321</height>
+       </rect>
+      </property>
+     </widget>
+     <zorder>fond_image_2</zorder>
+     <zorder>seg_label</zorder>
+    </widget>
+    <widget class="QPushButton" name="download_button_1">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>550</y>
+       <width>30</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="select_format1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>560</y>
+       <width>91</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>PPM</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>PNG</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>JPG</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_3">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>130</y>
+      <width>461</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+   </widget>
+   <zorder>logoLabel</zorder>
+   <zorder>PSNR_label</zorder>
+   <zorder>frame_1</zorder>
+   <zorder>frame_2</zorder>
+   <zorder>frame_3</zorder>
+   <zorder>label_1_bruit</zorder>
+   <zorder>select_algo</zorder>
+   <zorder>label_2_bruit</zorder>
+   <zorder>select_1_bruit</zorder>
+   <zorder>select_2_bruit</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_5</zorder>
+   <zorder>select_index</zorder>
+   <zorder>label_8</zorder>
+   <zorder>decomp_frame</zorder>
+   <zorder>select_txt</zorder>
+   <zorder>select_pal</zorder>
+   <zorder>select_comp_2</zorder>
+   <zorder>label_7</zorder>
+   <zorder>download_button_2</zorder>
+   <zorder>select_format2</zorder>
+   <zorder>decomp_button</zorder>
+   <zorder>select_indexbis</zorder>
+   <zorder>label_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

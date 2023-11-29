@@ -12,15 +12,28 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->logoLabel->setPixmap(logoPixmap);
     //ui->logoLabel->setAlignment(Qt::AlignCenter);
 
-    ui->fond_image_1->setStyleSheet("background-color: #071247; border-radius: 30px;");
-    ui->fond_image_2->setStyleSheet("background-color: #071247; border-radius: 30px;");
-    ui->fond_image_3->setStyleSheet("background-color: #071247; border-radius: 30px;");
+    ui->logoLabel->setStyleSheet("color: #704257; font-size: 30px;");
+    ui->logoLabel->setAlignment(Qt::AlignCenter);
 
-    connect(ui->select_algo, SIGNAL(currentIndexChanged(int)), this, SLOT(onAlgoSelected(int)));
+    ui->fond_image_1->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
+    ui->fond_image_2->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
+    ui->fond_image_3->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
 
-    //On cache les paramètres pour les bruits
+    ui->frame_1->setObjectName("styledFrame");
+    ui->frame_2->setObjectName("styledFrame");
+    ui->frame_3->setObjectName("styledFrame");
+
+    ui->download_button_1->setObjectName("downloadButton");
+    ui->upload_button->setObjectName("uploadButton");
+
     ui->select_1_bruit->hide();
     ui->select_2_bruit->hide();
+
+    ui->select_format1->hide();
+
+    connect(ui->select_algo, SIGNAL(currentIndexChanged(int)), this, SLOT(onAlgoSelected(int)));
+    connect(ui->upload_button, SIGNAL(clicked()), this, SLOT(on_load_button_clicked()));
+    connect(ui->download_button_1, SIGNAL(clicked()), this, SLOT(on_download_button_clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -90,10 +103,8 @@ void MainWindow::on_load_button_clicked()
 
 void MainWindow::onAlgoSelected(int index)
 {
-    // Récupérez le texte de l'élément sélectionné dans le QComboBox
     QString selectedAlgo = ui->select_algo->itemText(index);
 
-    // Affichez ou masquez le QSpinBox en fonction de la sélection
     if (selectedAlgo == "GAUSSIEN") {
         ui->label_1_bruit->setText("Moyenne");
         ui->label_2_bruit->show();
@@ -174,7 +185,7 @@ void MainWindow::on_submit_button_clicked()
 
 void MainWindow::on_download_comp_button_clicked()
 {
-    QString selected_algo = ui->select_comp->currentText();
+    /*QString selected_algo = ui->select_comp->currentText();
     QString selectedDir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QDir app_folder = QCoreApplication::applicationDirPath();
     if (selected_algo == "Palette couleur (256)")
@@ -191,18 +202,18 @@ void MainWindow::on_download_comp_button_clicked()
     if (selected_algo == "Fichier texte")
     {
         downloadFile(app_folder.filePath("../comp_res.txt"), selectedDir+"/txt_compresse.txt");
-    }
+    }*/
 }
 
 void MainWindow::on_download_button_clicked()
 {
-    QString selected_format = ui->select_format->currentText();
+    //QString selected_format = ui->select_format2->currentText();
 
     QDir app_folder = QCoreApplication::applicationDirPath();
     QString res_path = app_folder.filePath("../resultat.ppm");
     QString fileName;
 
-    if (selected_format == "PPM") {
+    /*if (selected_format == "PPM") {
         fileName = QFileDialog::getSaveFileName(this, tr("Sauvegarder l'image"),
                                                 QDir::homePath(),
                                                 tr("Images (*.ppm)"));
@@ -216,9 +227,15 @@ void MainWindow::on_download_button_clicked()
         fileName = QFileDialog::getSaveFileName(this, tr("Sauvegarder l'image"),
                                                 QDir::homePath(),
                                                 tr("Images (*.jpg)"));
-    }
+    }*/
 
-    downloadAs(res_path, fileName, selected_format);
+    fileName = QFileDialog::getSaveFileName(this, tr("Sauvegarder l'image"),
+                                            QDir::homePath(),
+                                            tr("Images (*.jpg, png, ppm, pgm)"));
+
+    QString format = fileName.right(3);
+
+    downloadAs(res_path, fileName, format);
 }
 
 void MainWindow::on_compress_button_clicked()
@@ -248,10 +265,10 @@ void MainWindow::on_compress_button_clicked()
     float size_before = img_base.size();
     float size_after = 1;
 
-    QString selected_compress = ui->select_comp->currentText();
+    /*QString selected_compress = ui->select_comp->currentText();
     if (selected_compress == "Palette couleur (256)")
     {
-        /*if ((KX * KY) > 256) {
+        if ((KX * KY) > 256) {
             QMessageBox::warning(this, "Erreur", "Utilisation de cet algorithme de compression impossible avec les valeurs passées actuelles !");
             return;
         }
@@ -261,8 +278,7 @@ void MainWindow::on_compress_button_clicked()
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "256");
-        }*/
-        QFile img_index1(app_folder.filePath("../index.pgm"));
+        }QFile img_index1(app_folder.filePath("../index.pgm"));
         QFile img_palette(app_folder.filePath("../palette.ppm"));
         size_after = img_index1.size() + img_palette.size();
     }
@@ -278,7 +294,7 @@ void MainWindow::on_compress_button_clicked()
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "65536");
-        }*/
+        }
 
         QFile img_index1(app_folder.filePath("../index.pgm"));
         QFile img_index2(app_folder.filePath("../indexbis.pgm"));
@@ -292,7 +308,7 @@ void MainWindow::on_compress_button_clicked()
         }
         if (selected_algo == "SNIC") {
             compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "txt");
-        }*/
+        }
 
         QFile txt_file(app_folder.filePath("../comp_res.txt"));
         size_after = txt_file.size();
@@ -301,10 +317,10 @@ void MainWindow::on_compress_button_clicked()
     qDebug() << "Before : " << size_before;
     qDebug() << "After : " << size_after;
     float size_ratio = size_before / size_after;
-    ui->taux_label->setText("Taux de compression : "+QString::number(size_ratio));
+    ui->taux_label->setText("Taux de compression : "+QString::number(size_ratio));*/
 }
 
-void MainWindow::on_select_pal_clicked()
+/*void MainWindow::on_select_pal_clicked()
 {
     pal_filepath = QFileDialog::getOpenFileName(this, tr("Sélectionner la palette de couleurs"), "", tr("Fichiers image (*.ppm)"));
     QFileInfo fileInfo(pal_filepath);
@@ -330,7 +346,7 @@ void MainWindow::on_select_txt_clicked()
     txt_filepath = QFileDialog::getOpenFileName(this, tr("Sélectionner le fichier txt compressé"), "", tr("Fichiers texte (*.txt)"));
     QFileInfo fileInfo(txt_filepath);
     ui->text_path->setText(fileInfo.fileName());
-}
+}*/
 
 void MainWindow::on_decomp_button_clicked() {
     QDir app_folder = QCoreApplication::applicationDirPath();

@@ -26,10 +26,10 @@ public slots:
     void on_download_comp_button_clicked();
     void on_download_button_clicked();
     void on_compress_button_clicked();
-    void on_select_pal_clicked();
+    /*void on_select_pal_clicked();
     void on_select_index_clicked();
     void on_select_indexbis_clicked();
-    void on_select_txt_clicked();
+    void on_select_txt_clicked();*/
     void on_decomp_button_clicked();
     void onAlgoSelected(int index);
 
