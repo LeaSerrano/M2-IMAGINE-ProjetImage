@@ -59,7 +59,8 @@ OBJECTS       = main.o \
 		mainwindow.o \
 		qrc_style.o \
 		moc_mainwindow.o
-DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
+DIST          = ../QT/preEntraine_test_Restormer.py \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/sanitize.conf \
@@ -427,7 +428,7 @@ main.o: ../QT/main.cpp ../QT/mainwindow.h
 
 mainwindow.o: ../QT/mainwindow.cpp ../QT/mainwindow.h \
 		ui_mainwindow.h \
-		../QT/our_functions.h \
+		../QT/Functions_Noise_Denoise.cpp \
 		../QT/image_ppm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../QT/mainwindow.cpp
 

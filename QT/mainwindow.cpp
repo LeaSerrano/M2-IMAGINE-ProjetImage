@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "our_functions.h"
+#include <QDebug>
+#include "Functions_Noise_Denoise.cpp"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,8 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->logoLabel->setPixmap(logoPixmap);
     //ui->logoLabel->setAlignment(Qt::AlignCenter);
 
-    ui->logoLabel->setStyleSheet("color: #704257; font-size: 30px;");
-    ui->logoLabel->setAlignment(Qt::AlignCenter);
+    //ui->logoLabel->setText("DENOISEPRO");
+    //ui->logoLabel->setStyleSheet("color: #704257; font-size: 20px;");
+    //ui->logoLabel->setAlignment(Qt::AlignCenter);
 
     ui->fond_image_1->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
     ui->fond_image_2->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
@@ -29,17 +32,26 @@ MainWindow::MainWindow(QWidget *parent)
     ui->select_1_bruit->hide();
     ui->select_2_bruit->hide();
 
+    ui->select_1_debruit->hide();
+    ui->select_2_debruit->hide();
+    ui->select_3_debruit->hide();
+    ui->select_4_debruit->hide();
+
     ui->select_format1->hide();
 
-    connect(ui->select_algo, SIGNAL(currentIndexChanged(int)), this, SLOT(onAlgoSelected(int)));
-    connect(ui->upload_button, SIGNAL(clicked()), this, SLOT(on_load_button_clicked()));
-    connect(ui->download_button_1, SIGNAL(clicked()), this, SLOT(on_download_button_clicked()));
+    connect(ui->select_algo_bruit, SIGNAL(currentIndexChanged(int)), this, SLOT(on_noise_algo_selected(int)));
+    connect(ui->select_algo_debruit, SIGNAL(currentIndexChanged(int)), this, SLOT(on_denoise_algo_selected(int)));
+    connect(ui->upload_button, SIGNAL(clicked()), this, SLOT(on_submit_button_upload_clicked()));
+    connect(ui->download_button_1, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
+    connect(ui->submit_button_noise, SIGNAL(clicked()), this, SLOT(on_submit_button_noise_clicked()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+QString extensionImageIn;
 
 /*--------------------- ALGORITHMES POUR QT ---------------------*/
 
@@ -85,25 +97,36 @@ void downloadAs(const QString& inputFilePath, const QString& outputFilePath, con
         image.save(outputFilePath, "JPG");
 }
 
-void MainWindow::on_load_button_clicked()
+void MainWindow::on_submit_button_upload_clicked()
 {
     init_filename = QFileDialog::getOpenFileName(this, tr("Sélectionner une image"), "", tr("Fichiers image (*.png *.jpg *.jpeg *.ppm *.pgm)"));
-    if (!init_filename.isEmpty()) {
+        if (!init_filename.isEmpty()) {
         QPixmap image(init_filename);
         if (!image.isNull()) {
-            QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-            ui->start_label->setPixmap(scaledImage);
-        }
-        else
+            QString cheminInitPic = "../init_pic.";
+            cheminInitPic += QFileInfo(init_filename).suffix();
+            extensionImageIn = QFileInfo(init_filename).suffix();
+
+            QFile::remove(cheminInitPic);
+
+            if (QFile::copy(init_filename, cheminInitPic)) {
+                qDebug() << "Copie de l'image réussie à : " << cheminInitPic;
+                        QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+                ui->start_label->setPixmap(scaledImage);
+            } else {
+                qDebug() << "Échec de la copie de l'image.";
+            }
+        } else {
             qDebug() << "Impossible de charger l'image";
+        }
     } else {
         qDebug() << "Impossible de sélectionner le fichier";
     }
 }
 
-void MainWindow::onAlgoSelected(int index)
+void MainWindow::on_noise_algo_selected(int index)
 {
-    QString selectedAlgo = ui->select_algo->itemText(index);
+    QString selectedAlgo = ui->select_algo_bruit->itemText(index);
 
     if (selectedAlgo == "GAUSSIEN") {
         ui->label_1_bruit->setText("Moyenne");
@@ -139,51 +162,117 @@ void MainWindow::onAlgoSelected(int index)
 }
 
 
-void MainWindow::on_submit_button_clicked()
+void MainWindow::on_submit_button_noise_clicked()
 {
     if (init_filename.isEmpty()) {
         QMessageBox::warning(this, "Erreur", "Veuillez sélectionner une image de départ !");
         return;
     }
 
-    QString selected_algo = ui->select_algo->currentText();
+    QString selected_algo = ui->select_algo_bruit->currentText();
     if (selected_algo.isEmpty()) {
         QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un algorithme de segmentation !");
         return;
     }
 
-    /*int KX = ui->select_KX->value();
-    int KY = ui->select_KY->value();
-    int M = ui->select_M->value();
-    int SEUIL = ui->select_SEUIL->value();
-    if (KX == 0 || KY == 0 || M == 0) {
-        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner des valeurs valides (supérieures à 0) !");
-        return;
-    }
-
     QDir app_folder = QCoreApplication::applicationDirPath();
-    QString init_path = app_folder.filePath("../init_pic.ppm");
-    QString seg_path = app_folder.filePath("../seg_pic.ppm");
-    QString comp_path = app_folder.filePath("../comp_pic.ppm");
+    QString init_path = app_folder.filePath("../init_pic." + extensionImageIn);
+    QString seg_path = app_folder.filePath("../seg_pic." + extensionImageIn);
 
-    convertToPPM(init_filename, init_path);
+    if (selected_algo == "GAUSSIEN") {
+        float moyenne = ui->select_1_bruit->value();
+        float ecartType = ui->select_2_bruit->value();
 
-    if (selected_algo == "SLIC") {
-        compute_SLIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, SEUIL, M, "");
+        Gaussien_Noise((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), moyenne, ecartType);
     }
-    if (selected_algo == "SNIC") {
-        compute_SNIC((char*)"init_pic.ppm", (char*)"seg_pic.ppm", KX, KY, M, "");
+    else if (selected_algo == "IMPULSIF") {
+        float facteur = ui->select_1_bruit->value();
+
+        Impulsif((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), facteur);
+    }
+    else if (selected_algo == "POISSON") {
+        float moyenne = ui->select_1_bruit->value();
+
+        Poisson((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), moyenne);
+    }
+    else if (selected_algo == "POIVRE SEL") {
+        float proportion = ui->select_1_bruit->value();
+
+        PoivreEtSel((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), proportion);
+    }
+    else if (selected_algo == "SPECKLE") {
+        float intensite = ui->select_1_bruit->value();
+
+        Speckle((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), intensite);
     }
 
     QPixmap image(seg_path);
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
         ui->seg_label->setPixmap(scaledImage);
-    }*/
-
+    }
 }
 
-void MainWindow::on_download_comp_button_clicked()
+void MainWindow::on_denoise_algo_selected(int index)
+{
+    QString selectedAlgo = ui->select_algo_debruit->itemText(index);
+
+    if (selectedAlgo == "MOYENNEUR" || selectedAlgo == "MEDIAN" || selectedAlgo == "MOYENNEUR PONDERE" || selectedAlgo == "GRADIENT SEUILLEE") {
+        ui->label_1_debruit->setText("Nombre voisins");
+        ui->label_2_debruit->setText("Intensité");
+        ui->label_3_debruit->hide();
+        ui->label_4_debruit->hide();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->hide();
+        ui->select_4_debruit->hide();
+
+    }
+    else if (selectedAlgo == "WIENER") {
+        ui->label_1_debruit->setText("Nombre voisins");
+        ui->label_2_debruit->setText("Variance");
+        ui->label_3_debruit->setText("Intensité");
+        ui->label_3_debruit->show();
+        ui->label_4_debruit->hide();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->show();
+        ui->select_4_debruit->hide();
+    }
+    else if (selectedAlgo == "GAUSSIEN") {
+        ui->label_1_debruit->setText("Nombre voisins");
+        ui->label_2_debruit->setText("Moyenne");
+        ui->label_3_debruit->setText("Variance");
+        ui->label_4_debruit->setText("Intensité");
+        ui->label_3_debruit->show();
+        ui->label_4_debruit->show();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->show();
+        ui->select_4_debruit->show();
+    }
+    else if(selectedAlgo == "NON LOCAL MEANS") {
+        ui->label_1_debruit->setText("Pondération");
+        ui->label_2_debruit->setText("Taille fenêtre recherche");
+        ui->label_3_debruit->setText("Taille fenêtre");
+        ui->label_3_debruit->show();
+        ui->label_4_debruit->hide();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->show();
+        ui->select_4_debruit->hide();
+    }
+    else if(selectedAlgo == "RESTORMER") {
+
+    }
+}
+
+
+/*void MainWindow::on_download_comp_button_clicked()
 {
     /*QString selected_algo = ui->select_comp->currentText();
     QString selectedDir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -202,10 +291,10 @@ void MainWindow::on_download_comp_button_clicked()
     if (selected_algo == "Fichier texte")
     {
         downloadFile(app_folder.filePath("../comp_res.txt"), selectedDir+"/txt_compresse.txt");
-    }*/
-}
+    }
+}*/
 
-void MainWindow::on_download_button_clicked()
+void MainWindow::on_submit_button_download_clicked()
 {
     //QString selected_format = ui->select_format2->currentText();
 
@@ -238,7 +327,7 @@ void MainWindow::on_download_button_clicked()
     downloadAs(res_path, fileName, format);
 }
 
-void MainWindow::on_compress_button_clicked()
+/*void MainWindow::on_compress_button_clicked()
 {
     QDir app_folder = QCoreApplication::applicationDirPath();
     if (init_filename.isEmpty()) {
@@ -261,7 +350,7 @@ void MainWindow::on_compress_button_clicked()
         return;
     }*/
 
-    QFile img_base(app_folder.filePath("../init_pic.ppm"));
+    /*QFile img_base(app_folder.filePath("../init_pic.ppm"));
     float size_before = img_base.size();
     float size_after = 1;
 
@@ -317,8 +406,8 @@ void MainWindow::on_compress_button_clicked()
     qDebug() << "Before : " << size_before;
     qDebug() << "After : " << size_after;
     float size_ratio = size_before / size_after;
-    ui->taux_label->setText("Taux de compression : "+QString::number(size_ratio));*/
-}
+    ui->taux_label->setText("Taux de compression : "+QString::number(size_ratio));
+}*/
 
 /*void MainWindow::on_select_pal_clicked()
 {
@@ -348,9 +437,9 @@ void MainWindow::on_select_txt_clicked()
     ui->text_path->setText(fileInfo.fileName());
 }*/
 
-void MainWindow::on_decomp_button_clicked() {
+/*void MainWindow::on_decomp_button_clicked() {
     QDir app_folder = QCoreApplication::applicationDirPath();
-    QString decomp_selected = ui->select_comp_2->currentText();
+    QString decomp_selected = ui->select_algo_debruit->currentText();
     if (decomp_selected == "Palette couleur (256)") {
         if (pal_filepath.isEmpty() || index_filepath.isEmpty()) {
             QMessageBox::warning(this, "Erreur", "Veuillez passez l'ensemble des fichiers nécessaires");
@@ -359,7 +448,7 @@ void MainWindow::on_decomp_button_clicked() {
         else {
             copieFichier(pal_filepath, "palette.ppm");
             copieFichier(index_filepath, "index.pgm");
-            decompress_256((char*) "index.pgm", (char*) "palette.ppm", (char*) "resultat.ppm");
+            //decompress_256((char*) "index.pgm", (char*) "palette.ppm", (char*) "resultat.ppm");
         }
     }
     if (decomp_selected == "Palette couleur (65536)") {
@@ -371,7 +460,7 @@ void MainWindow::on_decomp_button_clicked() {
             copieFichier(pal_filepath, "palette.ppm");
             copieFichier(index_filepath, "index1.pgm");
             copieFichier(indexbis_filepath, "index2.pgm");
-            decompress_65536((char*) "index1.pgm", (char*) "index2.pgm", (char*) "palette.ppm", (char*) "resultat.ppm");
+            //decompress_65536((char*) "index1.pgm", (char*) "index2.pgm", (char*) "palette.ppm", (char*) "resultat.ppm");
         }
     }
     if (decomp_selected == "Fichier texte") {
@@ -381,7 +470,7 @@ void MainWindow::on_decomp_button_clicked() {
         }
         else {
             copieFichier(txt_filepath, "text.txt");
-            decompress_txt((char*) "text.txt", (char*) "resultat.ppm");
+            //decompress_txt((char*) "text.txt", (char*) "resultat.ppm");
         }
     }
 
@@ -394,4 +483,4 @@ void MainWindow::on_decomp_button_clicked() {
     //float PSNR = compute_PSNR((char*) "init_pic.ppm", (char*) "seg_pic.ppm");
     //ui->PSNR_label->setText("PSNR : "+QString::number(PSNR));
 
-}
+}*/
