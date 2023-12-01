@@ -20,9 +20,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected :
+    void closeEvent(QCloseEvent *event) override;
+
 public slots:
     void on_submit_button_upload_clicked();
     void on_submit_button_noise_clicked();
+    void on_submit_button_denoise_clicked();
     //void on_download_comp_button_clicked();
     void on_submit_button_download_clicked();
     //void on_compress_button_clicked();

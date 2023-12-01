@@ -1,11 +1,13 @@
-#pragma once
 /********************************************************************************
-** Form generated from reading UI file ''
+** Form generated from reading UI file 'mainwindow.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.15.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
+
+#ifndef UI_MAINWINDOW_H
+#define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -53,7 +55,7 @@ public:
     QFrame *frame_3;
     QLabel *label_1_debruit;
     QLabel *label_4_debruit;
-    QPushButton *decomp_button;
+    QPushButton *submit_button_denoise;
     QLabel *label_2_debruit;
     QLabel *label_3_debruit;
     QLabel *label_3;
@@ -191,19 +193,19 @@ public:
         frame_3->setFrameShadow(QFrame::Raised);
         label_1_debruit = new QLabel(frame_3);
         label_1_debruit->setObjectName(QString::fromUtf8("label_1_debruit"));
-        label_1_debruit->setGeometry(QRect(160, 90, 81, 25));
+        label_1_debruit->setGeometry(QRect(160, 90, 111, 25));
         label_4_debruit = new QLabel(frame_3);
-        label_4_debruit->setObjectName(QString::fromUtf8("label_4_bruit"));
-        label_4_debruit->setGeometry(QRect(160, 180, 81, 25));
-        decomp_button = new QPushButton(frame_3);
-        decomp_button->setObjectName(QString::fromUtf8("decomp_button"));
-        decomp_button->setGeometry(QRect(180, 260, 131, 41));
+        label_4_debruit->setObjectName(QString::fromUtf8("label_4_debruit"));
+        label_4_debruit->setGeometry(QRect(160, 180, 111, 25));
+        submit_button_denoise = new QPushButton(frame_3);
+        submit_button_denoise->setObjectName(QString::fromUtf8("submit_button_denoise"));
+        submit_button_denoise->setGeometry(QRect(180, 260, 131, 41));
         label_2_debruit = new QLabel(frame_3);
         label_2_debruit->setObjectName(QString::fromUtf8("label_2_debruit"));
-        label_2_debruit->setGeometry(QRect(160, 120, 81, 25));
+        label_2_debruit->setGeometry(QRect(160, 120, 111, 25));
         label_3_debruit = new QLabel(frame_3);
         label_3_debruit->setObjectName(QString::fromUtf8("label_3_debruit"));
-        label_3_debruit->setGeometry(QRect(160, 150, 81, 25));
+        label_3_debruit->setGeometry(QRect(160, 150, 111, 25));
         label_3 = new QLabel(frame_3);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setGeometry(QRect(40, 10, 201, 61));
@@ -240,7 +242,7 @@ public:
         select_algo_debruit->addItem(QString());
         select_algo_debruit->addItem(QString());
         select_algo_debruit->setObjectName(QString::fromUtf8("select_algo_debruit"));
-        select_algo_debruit->setGeometry(QRect(290, 30, 111, 24));
+        select_algo_debruit->setGeometry(QRect(260, 30, 141, 24));
         MainWindow->setCentralWidget(centralwidget);
         logoLabel->raise();
         PSNR_label->raise();
@@ -295,7 +297,7 @@ public:
         label_1_bruit->setText(QString());
         label_1_debruit->setText(QString());
         label_4_debruit->setText(QString());
-        decomp_button->setText(QCoreApplication::translate("MainWindow", "D\303\251bruiter", nullptr));
+        submit_button_denoise->setText(QCoreApplication::translate("MainWindow", "D\303\251bruiter", nullptr));
         label_2_debruit->setText(QString());
         label_3_debruit->setText(QString());
         label_3->setText(QCoreApplication::translate("MainWindow", "Algorithme de d\303\251bruitage :", nullptr));
@@ -319,3 +321,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
+#endif // UI_MAINWINDOW_H
