@@ -59,8 +59,7 @@ OBJECTS       = main.o \
 		mainwindow.o \
 		qrc_style.o \
 		moc_mainwindow.o
-DIST          = ../QT/preEntraine_test_Restormer.py \
-		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
+DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/sanitize.conf \

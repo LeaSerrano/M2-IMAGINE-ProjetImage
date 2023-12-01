@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QDebug>
 #include "Functions_Noise_Denoise.cpp"
+#include <QProcess>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -44,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->upload_button, SIGNAL(clicked()), this, SLOT(on_submit_button_upload_clicked()));
     connect(ui->download_button_1, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
     connect(ui->submit_button_noise, SIGNAL(clicked()), this, SLOT(on_submit_button_noise_clicked()));
+    connect(ui->submit_button_denoise, SIGNAL(clicked()), this, SLOT(on_submit_button_denoise_clicked()));
+
 }
 
 MainWindow::~MainWindow()
@@ -177,36 +180,36 @@ void MainWindow::on_submit_button_noise_clicked()
 
     QDir app_folder = QCoreApplication::applicationDirPath();
     QString init_path = app_folder.filePath("../init_pic." + extensionImageIn);
-    QString seg_path = app_folder.filePath("../seg_pic." + extensionImageIn);
+    QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
 
     if (selected_algo == "GAUSSIEN") {
         float moyenne = ui->select_1_bruit->value();
         float ecartType = ui->select_2_bruit->value();
 
-        Gaussien_Noise((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), moyenne, ecartType);
+        Gaussien_Noise((char*)init_path.toUtf8().constData(), (char*)noise_path.toUtf8().constData(), moyenne, ecartType);
     }
     else if (selected_algo == "IMPULSIF") {
         float facteur = ui->select_1_bruit->value();
 
-        Impulsif((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), facteur);
+        Impulsif((char*)init_path.toUtf8().constData(), (char*)noise_path.toUtf8().constData(), facteur);
     }
     else if (selected_algo == "POISSON") {
         float moyenne = ui->select_1_bruit->value();
 
-        Poisson((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), moyenne);
+        Poisson((char*)init_path.toUtf8().constData(), (char*)noise_path.toUtf8().constData(), moyenne);
     }
     else if (selected_algo == "POIVRE SEL") {
         float proportion = ui->select_1_bruit->value();
 
-        PoivreEtSel((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), proportion);
+        PoivreEtSel((char*)init_path.toUtf8().constData(), (char*)noise_path.toUtf8().constData(), proportion);
     }
     else if (selected_algo == "SPECKLE") {
         float intensite = ui->select_1_bruit->value();
 
-        Speckle((char*)init_path.toUtf8().constData(), (char*)seg_path.toUtf8().constData(), intensite);
+        Speckle((char*)init_path.toUtf8().constData(), (char*)noise_path.toUtf8().constData(), intensite);
     }
 
-    QPixmap image(seg_path);
+    QPixmap image(noise_path);
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
         ui->seg_label->setPixmap(scaledImage);
@@ -217,9 +220,12 @@ void MainWindow::on_denoise_algo_selected(int index)
 {
     QString selectedAlgo = ui->select_algo_debruit->itemText(index);
 
-    if (selectedAlgo == "MOYENNEUR" || selectedAlgo == "MEDIAN" || selectedAlgo == "MOYENNEUR PONDERE" || selectedAlgo == "GRADIENT SEUILLEE") {
+    if (selectedAlgo == "MOYENNEUR" || selectedAlgo == "MEDIAN") {
         ui->label_1_debruit->setText("Nombre voisins");
         ui->label_2_debruit->setText("Intensité");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
         ui->label_3_debruit->hide();
         ui->label_4_debruit->hide();
 
@@ -233,6 +239,9 @@ void MainWindow::on_denoise_algo_selected(int index)
         ui->label_1_debruit->setText("Nombre voisins");
         ui->label_2_debruit->setText("Variance");
         ui->label_3_debruit->setText("Intensité");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
         ui->label_3_debruit->show();
         ui->label_4_debruit->hide();
 
@@ -246,6 +255,9 @@ void MainWindow::on_denoise_algo_selected(int index)
         ui->label_2_debruit->setText("Moyenne");
         ui->label_3_debruit->setText("Variance");
         ui->label_4_debruit->setText("Intensité");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
         ui->label_3_debruit->show();
         ui->label_4_debruit->show();
 
@@ -254,10 +266,43 @@ void MainWindow::on_denoise_algo_selected(int index)
         ui->select_3_debruit->show();
         ui->select_4_debruit->show();
     }
+    else if (selectedAlgo == "GRADIENT SEUILLEE") {
+        ui->label_1_debruit->setText("Nombre voisins");
+        ui->label_2_debruit->setText("Moyenne");
+        ui->label_3_debruit->setText("Intensité");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
+        ui->label_3_debruit->show();
+        ui->label_4_debruit->hide();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->show();
+        ui->select_4_debruit->hide();
+    }
+    else if (selectedAlgo == "MOYENNEUR PONDERE") {
+        ui->label_1_debruit->setText("Nombre voisins");
+        ui->label_2_debruit->setText("Puissance");
+        ui->label_3_debruit->setText("Intensité");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
+        ui->label_3_debruit->show();
+        ui->label_4_debruit->hide();
+
+        ui->select_1_debruit->show();
+        ui->select_2_debruit->show();
+        ui->select_3_debruit->show();
+        ui->select_4_debruit->hide();
+    }
     else if(selectedAlgo == "NON LOCAL MEANS") {
         ui->label_1_debruit->setText("Pondération");
         ui->label_2_debruit->setText("Taille fenêtre recherche");
         ui->label_3_debruit->setText("Taille fenêtre");
+
+        ui->label_1_debruit->show();
+        ui->label_2_debruit->show();
         ui->label_3_debruit->show();
         ui->label_4_debruit->hide();
 
@@ -267,10 +312,138 @@ void MainWindow::on_denoise_algo_selected(int index)
         ui->select_4_debruit->hide();
     }
     else if(selectedAlgo == "RESTORMER") {
+        ui->label_1_debruit->hide();
+        ui->label_2_debruit->hide();
+        ui->label_3_debruit->hide();
+        ui->label_4_debruit->hide();
 
+        ui->select_1_debruit->hide();
+        ui->select_2_debruit->hide();
+        ui->select_3_debruit->hide();
+        ui->select_4_debruit->hide();
     }
 }
 
+void MainWindow::on_submit_button_denoise_clicked()
+{
+    if (init_filename.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner une image de départ !");
+        return;
+    }
+
+    QString selected_algo = ui->select_algo_debruit->currentText();
+    if (selected_algo.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un algorithme de segmentation !");
+        return;
+    }
+
+    QDir app_folder = QCoreApplication::applicationDirPath();
+    QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+    QString denoise_path = app_folder.filePath("../denoise_pic." + extensionImageIn);
+
+    if (selected_algo == "MOYENNEUR") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float intensite = ui->select_2_debruit->value();
+
+        Moyenneur((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, intensite);
+    }
+    else if (selected_algo == "MEDIAN") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float intensite = ui->select_2_debruit->value();
+
+        Median((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, intensite);
+    }
+    else if (selected_algo == "WIENER") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float variance = ui->select_2_debruit->value();
+        float intensite = ui->select_3_debruit->value();
+
+        Wiener((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, variance, intensite);
+    }
+    else if (selected_algo == "GAUSSIEN") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float moyenne = ui->select_2_debruit->value();
+        float variance = ui->select_3_debruit->value();
+        float intensite = ui->select_4_debruit->value();
+
+        Gaussien_Denoise((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, moyenne, variance, intensite);
+    }
+    else if (selected_algo == "GRADIENT SEUILLEE") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float moyenne = ui->select_2_debruit->value();
+        float intensite = ui->select_3_debruit->value();
+
+        Gradient((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, moyenne, intensite);
+    }
+    else if (selected_algo == "MOYENNEUR PONDERE") {
+        float nbVoisins = ui->select_1_debruit->value();
+        float puissance = ui->select_2_debruit->value();
+        float intensite = ui->select_3_debruit->value();
+
+        Pondere((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), nbVoisins, puissance, intensite);
+    }
+    else if(selected_algo == "NON LOCAL MEANS") {
+        float ponderation = ui->select_1_debruit->value();
+        float tailleFenetreRecherche = ui->select_2_debruit->value();
+        float tailleFenetre = ui->select_3_debruit->value();
+
+        NonLocalMeans((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), ponderation, tailleFenetreRecherche, tailleFenetre);
+    }
+    else if(selected_algo == "RESTORMER") {
+        QDir app_folder = QCoreApplication::applicationDirPath();
+
+        QString cheminScript = app_folder.filePath("../QT/preEntraine_test_Restormer.py");
+        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+
+        QImage input_image(noise_path);
+        if (input_image.isNull())
+        {
+            qDebug() << "Erreur : Impossible de charger l'image d'entrée.";
+                return;
+        }
+
+        input_image.save("../noise_pic.png", "PNG");
+
+        QString denoise_input_path = app_folder.filePath("../denoise_pic.png");
+        QString noise_input_path = app_folder.filePath("../noise_pic.png");
+
+        QProcess *process = new QProcess(this);
+        process->setProgram("/net/apps/anaconda3/bin/python3");
+        process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_input_path);
+
+        process->start();
+        process->waitForFinished(-1);
+
+        delete process;
+
+        QImage image(denoise_input_path);
+        QString denoise_path;
+
+        if (extensionImageIn == "ppm") {
+            QImage ppmImage = image.convertToFormat(QImage::Format_RGB32);
+            ppmImage.save("../denoise_pic.ppm");
+            denoise_path = "../denoise_pic.ppm";
+        }
+        else {
+            QImage pgmImage = image.convertToFormat(QImage::Format_Grayscale8);
+            pgmImage.save("../denoise_pic.pgm");
+            denoise_path = "../denoise_pic.pgm";
+        }
+
+        QString cheminNoisePic = "../noise_pic.png";
+        QFile::remove(cheminNoisePic);
+
+        QString cheminDenoisePic = "../denoise_pic.png";
+        QFile::remove(cheminDenoisePic);
+    }
+
+
+    QPixmap image(denoise_path);
+    if (!image.isNull()) {
+        QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+        ui->decomp_label->setPixmap(scaledImage);
+    }
+}
 
 /*void MainWindow::on_download_comp_button_clicked()
 {
@@ -484,3 +657,17 @@ void MainWindow::on_select_txt_clicked()
     //ui->PSNR_label->setText("PSNR : "+QString::number(PSNR));
 
 }*/
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QString cheminInitPic = "../init_pic." + extensionImageIn;
+    QFile::remove(cheminInitPic);
+
+    QString cheminNoisePic = "../noise_pic." + extensionImageIn;
+    QFile::remove(cheminNoisePic);
+
+    QString cheminDenoisePic = "../denoise_pic." + extensionImageIn;
+    QFile::remove(cheminDenoisePic);
+
+    QMainWindow::closeEvent(event);
+}
