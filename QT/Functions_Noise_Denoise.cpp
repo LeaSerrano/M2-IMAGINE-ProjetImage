@@ -146,17 +146,17 @@ float calculerPoids(float mesureSimilarite, float sigma, float h) {
 ///////////////////////////////////////////////////////////////////////     MOYENNEUR     ///////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Moyenneur_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite ) 
+void Moyenneur_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -180,28 +180,28 @@ void Moyenneur_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int 
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Moyenneur_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite = 1. ) 
+void Moyenneur_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float intensite = 1. )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -235,20 +235,20 @@ void Moyenneur_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, in
             ImgOut[(i*nW+j)*3+2] = round( clip( intensite*new_val_B + (1.-intensite)*old_val_B, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Moyenneur( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
-{   
-    char cNomImgLueLocation[256];
+void Moyenneur( /*int argc, char** argv, char* cDirImgLue, */char* cNomImgLue, /*char* extension, char* OutDir*/char* cNomImgEcrite, float nbVoisins, float intensite )
+{
+    /*char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     int voisins = atoi( argv[5] );
@@ -264,29 +264,34 @@ void Moyenneur( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char*
         intensite = atof( argv[6] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 )      Moyenneur_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 ) Moyenneur_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )      Moyenneur_G( cNomImgLue, /*cNomImgLueLocation, OutDir*/cNomImgEcrite, nbVoisins, intensite );
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) Moyenneur_RGB( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////     MEDIAN     /////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Median_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite ) 
+void Median_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -308,28 +313,28 @@ void Median_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voi
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MED_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MED_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
                                      
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Median_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float intensite ) 
+void Median_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -365,20 +370,20 @@ void Median_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             ImgOut[(i*nW+j)*3+2] = round( clip( intensite*new_val_B + (1.-intensite)*old_val_B, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str() );
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_MOY_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str() );
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Median( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
+void Median(/* int argc, char** argv, char* cDirImgLue, */char* cNomImgLue, /*char* extension, char* OutDir*/char* cNomImgEcrite, float nbVoisins, float intensite )
 {   
-    char cNomImgLueLocation[256];
+    /*char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     int voisins = atoi( argv[5] );
@@ -394,29 +399,34 @@ void Median( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* ex
         intensite = atof( argv[6] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 )      Median_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 ) Median_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )      Median_G( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, intensite );
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) Median_RGB( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////     WIENER     /////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Wiener_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Var_Bruit, float intensite ) 
+void Wiener_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float Var_Bruit, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -440,30 +450,30 @@ void Wiener_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voi
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string Var_BruitStr = std::to_string(Var_Bruit);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string Var_BruitStr = std::to_string(Var_Bruit);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Wiener_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Var_Bruit, float intensite ) 
+void Wiener_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float Var_Bruit, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -501,22 +511,22 @@ void Wiener_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             ImgOut[(i*nW+j)*3+2] = round( clip( intensite*new_val_B + (1.-intensite)*old_val_B, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string Var_BruitStr = std::to_string(Var_Bruit);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string Var_BruitStr = std::to_string(Var_Bruit);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_WIE_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + Var_BruitStr.substr(0, Var_BruitStr.find(".") + 2) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Wiener( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
+void Wiener(/* int argc, char** argv, char* cDirImgLue,*/ char* cNomImgLue/*, char* extension, char* OutDir*/, char* cNomImgEcrite, float nbVoisins, float variance, float intensite )
 {   
-    char cNomImgLueLocation[256];
+    /*char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     int voisins = atoi( argv[5] );
@@ -539,29 +549,34 @@ void Wiener( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* ex
         intensite = atof( argv[7] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 ) Wiener_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Var_Bruit, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 ) Wiener_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Var_Bruit, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 ) Wiener_G( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, variance, intensite );
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) Wiener_RGB( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, variance, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////     GAUSSIEN     ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Gaussien_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Mean, float Var, float intensite ) 
+void Gaussien_Denoise_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float Mean, float Var, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -593,32 +608,32 @@ void Gaussien_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string MeanStr = std::to_string(Mean);
-    std::string VarStr = std::to_string(Var);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_") 
-                                     + VarStr.substr(0, VarStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string MeanStr = std::to_string(Mean);
+    //std::string VarStr = std::to_string(Var);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_")
+                                     //+ std::to_string(voisins) + std::string("_")
+                                     //+ MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_")
+                                     //+ VarStr.substr(0, VarStr.find(".") + 2) + std::string("_")
+                                     //+ intensiteStr.substr(0, intensiteStr.find(".") + 2)
+                                     //+ std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut); free( filter );
 }
 
-void Gaussien_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float Mean, float Var, float intensite = 1. ) 
+void Gaussien_Denoise_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float Mean, float Var, float intensite = 1. )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -660,27 +675,27 @@ void Gaussien_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
             ImgOut[(i*nW+j)*3+2] = round( clip( intensite*new_val_B + (1.-intensite)*old_val_B, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string MeanStr = std::to_string(Mean);
-    std::string VarStr = std::to_string(Var);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_") 
-                                     + VarStr.substr(0, VarStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string MeanStr = std::to_string(Mean);
+    //std::string VarStr = std::to_string(Var);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GAU_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + MeanStr.substr(0, MeanStr.find(".") + 2) + std::string("_")
+    //                                 + VarStr.substr(0, VarStr.find(".") + 2) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut); free( filter );
 }
 
-void Gaussien( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
+void Gaussien_Denoise( /*int argc, char** argv, char* cDirImgLue,*/ char* cNomImgLue, char* cNomImgEcrite, /*char* extension, char* OutDir*/ float nbVoisins, float moyenne, float variance, float intensite)
 {   
-    char cNomImgLueLocation[256];
-    strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
+    //char cNomImgLueLocation[256];
+    //strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
-    int voisins = atoi( argv[5] );
+    /*int voisins = atoi( argv[5] );
     if( voisins <= 0 )
     {
         printf("Nombre de voisins négatifs\n");
@@ -714,12 +729,17 @@ void Gaussien( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         intensite = atof( argv[8] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 )      Gaussien_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Mean, Var, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 ) Gaussien_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, Mean, Var, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp(cDernieresLettres, "pgm" ) == 0 )      Gaussien_Denoise_G( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, nbVoisins, moyenne, variance, intensite );
+    else if( strcmp(cDernieresLettres, "ppm" ) == 0 ) Gaussien_Denoise_RGB( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, nbVoisins, moyenne, variance, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -822,17 +842,17 @@ void Fournier( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
 ////////////////////////////////////////////////////////////////////////     GRADIENT     ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, bool use_MOY, float intensite ) 
+void Gradient_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, bool use_MOY, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut, *ImgGrad;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
     allocation_tableau(ImgGrad, OCTET, nTaille);
@@ -982,28 +1002,28 @@ void Gradient_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int v
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default );free( ImgGradF );
 }
 
-void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, bool use_MOY, float intensite ) 
+void Gradient_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, bool use_MOY, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut, *ImgGrad;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
     allocation_tableau(ImgGrad, OCTET, nTaille);
@@ -1161,20 +1181,20 @@ void Gradient_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int
                 ImgOut[(i*nW+j)*3+d] = ImgGrad[(i*nW+j)*3+d];//round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
             }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_GRA_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free( ImgGrad ); free(ImgOut); free( filter ); free( filter_default ); free( ImgGradF );
 }
 
-void Gradient( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
-{   
-    char cNomImgLueLocation[256];
+void Gradient(/* int argc, char** argv, char* cDirImgLue, */char* cNomImgLue, char* cNomImgEcrite, float nbVoisins, float moyenne, float intensite/*char* extension, char* OutDir*/ )
+{
+   /* char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     int voisins = atoi( argv[5] );
@@ -1192,29 +1212,39 @@ void Gradient( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* 
         intensite = atof( argv[7] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
+    }*/
+
+    bool use_MOY = false;
+    if (moyenne > 0) {
+        use_MOY = true;
     }
 
-    if( strcmp( extension, "pgm" ) == 0 )       Gradient_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, use_MOY, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 )  Gradient_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, use_MOY, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )       Gradient_G( cNomImgLue, /*cNomImgLueLocation, OutDir*/ cNomImgEcrite, nbVoisins, use_MOY, intensite );
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 )  Gradient_RGB( cNomImgLue, /*cNomImgLueLocation, OutDir*/cNomImgEcrite, nbVoisins, use_MOY, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////     MOYENNEUR PONDEREE     ///////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Pondere_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float power, float intensite ) 
+void Pondere_G( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float power, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -1243,30 +1273,30 @@ void Pondere_G( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int vo
             ImgOut[i*nW+j] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
         }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string powerStr = std::to_string(power);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string powerStr = std::to_string(power);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Pondere_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int voisins, float power, float intensite ) 
+void Pondere_RGB( char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, int voisins, float power, float intensite )
 {
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
     nTaille = nH * nW * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -1296,22 +1326,22 @@ void Pondere_RGB( char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, int 
                 ImgOut[(i*nW+j)*3+d] = round( clip( intensite*new_val + (1.-intensite)*old_val, 0., 255. ) );
             }
 
-    char cNomImgEcrite[250];
-    std::string intensiteStr = std::to_string(intensite);
-    std::string powerStr = std::to_string(power);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_") 
-                                     + std::to_string(voisins) + std::string("_") 
-                                     + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_") 
-                                     + intensiteStr.substr(0, intensiteStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string intensiteStr = std::to_string(intensite);
+    //std::string powerStr = std::to_string(power);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_PON_")
+    //                                 + std::to_string(voisins) + std::string("_")
+    //                                 + powerStr.substr(0, powerStr.find(".") + 2) + std::string("_")
+    //                                 + intensiteStr.substr(0, intensiteStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
 
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void Pondere( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
+void Pondere( /*int argc, char** argv, char* cDirImgLue, */char* cNomImgLue, char* cNomImgEcrite, float nbVoisins, float puissance, float intensite/*char* extension, char* OutDir*/ )
 {   
-    char cNomImgLueLocation[256];
+    /*char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     int voisins = atoi( argv[5] );
@@ -1334,12 +1364,17 @@ void Pondere( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* e
         intensite = atof( argv[7] );
         if( intensite < 0 ) intensite = 0.;
         if( intensite > 1 ) intensite = 1.;
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 )       Pondere_G( cNomImgLue, cNomImgLueLocation, OutDir, voisins, power, intensite );
-    else if( strcmp( extension, "ppm" ) == 0 )  Pondere_RGB( cNomImgLue, cNomImgLueLocation, OutDir, voisins, power, intensite );
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )       Pondere_G( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, nbVoisins, puissance, intensite );
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 )  Pondere_RGB( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, nbVoisins, puissance, intensite );
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1379,18 +1414,18 @@ void calculNonLocalMeans(int m, int nH, int nW, int tailleFenetre,float sigma, f
     }
 }
 
-void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+void NonLocalMeans_G(char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, float sigma, float h, int tailleFenetre) {
 
     int nH, nW, nTaille;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_pgm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
 
     nTaille = nH * nW;
 
     allocation_tableau(ImgIn, OCTET, nTaille);
-    lire_image_pgm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille);
 
@@ -1398,33 +1433,33 @@ void NonLocalMeans_G(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, f
     int m = tailleFenetre/2;
     calculNonLocalMeans(m, nH, nW, tailleFenetre, sigma, h, ImgIn, ImgOut);
 
-    char cNomImgEcrite[250];
-    std::string sigmaStr = std::to_string(sigma);
-    std::string hStr = std::to_string(h);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_") 
-                                     + std::to_string(m) + std::string("_") 
-                                     + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_") 
-                                     + hStr.substr(0, hStr.find(".") + 2) 
-                                     + std::string(".pgm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string sigmaStr = std::to_string(sigma);
+    //std::string hStr = std::to_string(h);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_")
+    //                                 + std::to_string(m) + std::string("_")
+    //                                 + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_")
+    //                                 + hStr.substr(0, hStr.find(".") + 2)
+    //                                 + std::string(".pgm") ).c_str());
 
     ecrire_image_pgm(cNomImgEcrite, ImgOut, nH, nW);
     free(ImgIn); free(ImgOut);
 }
 
-void NonLocalMeans_RGB(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir, float sigma, float h, int tailleFenetre) {
+void NonLocalMeans_RGB(char *cNomImgLue, /*char *cNomImgLueLocation, char* OutDir*/char* cNomImgEcrite, float sigma, float h, int tailleFenetre) {
 
     int nH, nW, nTaille, nTaille3;
     std::string folder, extension;
 
     OCTET *ImgIn, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(cNomImgLueLocation, &nH, &nW);
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
 
     nTaille = nH * nW;
     nTaille3 = nTaille * 3;
 
     allocation_tableau(ImgIn, OCTET, nTaille3);
-    lire_image_ppm(cNomImgLueLocation, ImgIn, nH * nW);
+    lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     allocation_tableau(ImgOut, OCTET, nTaille3);
 
@@ -1458,23 +1493,23 @@ void NonLocalMeans_RGB(char *cNomImgLue, char *cNomImgLueLocation, char* OutDir,
     }
 
 
-    char cNomImgEcrite[250];
-    std::string sigmaStr = std::to_string(sigma);
-    std::string hStr = std::to_string(h);
-    strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_") 
-                                     + std::to_string(m) + std::string("_") 
-                                     + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_") 
-                                     + hStr.substr(0, hStr.find(".") + 2) 
-                                     + std::string(".ppm") ).c_str());
+    //char cNomImgEcrite[250];
+    //std::string sigmaStr = std::to_string(sigma);
+    //std::string hStr = std::to_string(h);
+    //strcpy(cNomImgEcrite, std::string( std::string(OutDir) + cNomImgLue + std::string("_NLM_")
+    //                                 + std::to_string(m) + std::string("_")
+    //                                 + sigmaStr.substr(0, sigmaStr.find(".") + 2) + std::string("_")
+    //                                 + hStr.substr(0, hStr.find(".") + 2)
+    //                                 + std::string(".ppm") ).c_str());
     
     ecrire_image_ppm(cNomImgEcrite, ImgOut,  nH, nW);
 
     free(ImgIn); free(ImgOut); free(tabIdR); free(tabIdG); free(tabIdB); free(traitementR); free(traitementG); free(traitementB);
 }
 
-void NonLocalMeans( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, char* extension, char* OutDir )
-{   
-    char cNomImgLueLocation[256];
+void NonLocalMeans( /*int argc, char** argv, char* cDirImgLue, */char* cNomImgLue, char* cNomImgEcrite, float ponderation, float tailleFenetreRecherche, float tailleFenetre/*char* extension, char* OutDir*/ )
+{
+    /*char cNomImgLueLocation[256];
     strcpy(cNomImgLueLocation, std::string(std::string(cDirImgLue) + cNomImgLue + std::string(".") + extension ).c_str());
 
     float sigma = atof( argv[5] );
@@ -1486,12 +1521,17 @@ void NonLocalMeans( int argc, char** argv, char* cDirImgLue, char* cNomImgLue, c
     {
         printf("Nombre de voisins négatifs\n");
         exit(1);
-    }
+    }*/
 
-    if( strcmp( extension, "pgm" ) == 0 )      NonLocalMeans_G( cNomImgLue, cNomImgLueLocation, OutDir, sigma, h, tailleFenetre);
-    else if( strcmp( extension, "ppm" ) == 0 ) NonLocalMeans_RGB( cNomImgLue, cNomImgLueLocation, OutDir, sigma, h, tailleFenetre);
+    char cDernieresLettres[4];
+    int longueur = strlen(cNomImgLue);
+
+    strcpy(cDernieresLettres, cNomImgLue + longueur - 3);
+
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )      NonLocalMeans_G( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, ponderation, tailleFenetreRecherche, tailleFenetre);
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) NonLocalMeans_RGB( cNomImgLue, cNomImgEcrite/*cNomImgLueLocation, OutDir*/, ponderation, tailleFenetreRecherche, tailleFenetre);
     else   
-        printf("Extension %s inconnue.\n", extension );
+        printf("Extension %s inconnue.\n", cDernieresLettres );
 }
 
 void calculBruitPoivreEtSel(OCTET *ImgIn, OCTET *ImgOut, int nW, int nH, float proportion) {
@@ -1651,7 +1691,7 @@ void calculBruitGaussien(OCTET *ImgIn, OCTET *ImgOut, int nW, int nH, float moye
     }
 }
 
-void Gaussien_G(char *cNomImgLue, char *cNomImgEcrite/*char *cNomImgLueLocation, char* OutDir*/, float moyenne, float ecartType)
+void Gaussien_Noise_G(char *cNomImgLue, char *cNomImgEcrite/*char *cNomImgLueLocation, char* OutDir*/, float moyenne, float ecartType)
 {
     int nH, nW, nTaille;
 
@@ -1679,7 +1719,7 @@ void Gaussien_G(char *cNomImgLue, char *cNomImgEcrite/*char *cNomImgLueLocation,
     free(ImgIn); free(ImgOut);
 }
 
-void Gaussien_RGB(char *cNomImgLue, char *cNomImgEcrite/*char *cNomImgLueLocation, char* OutDir*/, float moyenne, float ecartType)
+void Gaussien_Noise_RGB(char *cNomImgLue, char *cNomImgEcrite/*char *cNomImgLueLocation, char* OutDir*/, float moyenne, float ecartType)
 {
     int nH, nW, nTaille, nTaille3;
     std::string folder, extension;
@@ -1752,8 +1792,8 @@ void Gaussien_Noise(/* int argc, char** argv, char* cDirImgLue,*/ char* cNomImgL
 
     //cNomImgLue[longueur - 4] = '\0';
 
-    if( strcmp( cDernieresLettres, "pgm" ) == 0 )      Gaussien_G( cNomImgLue, cNomImgEcrite, /*cNomImgLueLocation, OutDir,*/ moyenne, ecartType);
-    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) Gaussien_RGB( cNomImgLue, cNomImgEcrite, /*cNomImgLueLocation, OutDir,*/ moyenne, ecartType);
+    if( strcmp( cDernieresLettres, "pgm" ) == 0 )      Gaussien_Noise_G( cNomImgLue, cNomImgEcrite, /*cNomImgLueLocation, OutDir,*/ moyenne, ecartType);
+    else if( strcmp( cDernieresLettres, "ppm" ) == 0 ) Gaussien_Noise_RGB( cNomImgLue, cNomImgEcrite, /*cNomImgLueLocation, OutDir,*/ moyenne, ecartType);
     else
         printf("Extension %s inconnue.\n", cDernieresLettres );
 }

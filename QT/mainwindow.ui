@@ -443,7 +443,7 @@
       <rect>
        <x>160</x>
        <y>90</y>
-       <width>81</width>
+       <width>111</width>
        <height>25</height>
       </rect>
      </property>
@@ -456,7 +456,7 @@
       <rect>
        <x>160</x>
        <y>180</y>
-       <width>81</width>
+       <width>111</width>
        <height>25</height>
       </rect>
      </property>
@@ -464,7 +464,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="decomp_button">
+    <widget class="QPushButton" name="submit_button_denoise">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -482,7 +482,7 @@
       <rect>
        <x>160</x>
        <y>120</y>
-       <width>81</width>
+       <width>111</width>
        <height>25</height>
       </rect>
      </property>
@@ -495,7 +495,7 @@
       <rect>
        <x>160</x>
        <y>150</y>
-       <width>81</width>
+       <width>111</width>
        <height>25</height>
       </rect>
      </property>
@@ -589,9 +589,9 @@
     <widget class="QComboBox" name="select_algo_debruit">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>260</x>
        <y>30</y>
-       <width>111</width>
+       <width>141</width>
        <height>24</height>
       </rect>
      </property>
