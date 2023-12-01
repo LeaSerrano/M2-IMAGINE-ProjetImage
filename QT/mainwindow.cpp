@@ -390,41 +390,11 @@ void MainWindow::on_submit_button_denoise_clicked()
         NonLocalMeans((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), ponderation, tailleFenetreRecherche, tailleFenetre);
     }
     else if(selected_algo == "RESTORMER") {
-        /*QDir app_folder = QCoreApplication::applicationDirPath();
-        QString cheminScript = app_folder.filePath("preEntraine_test_Restormer.py");
-        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
-        QImage input_image(noise_path);
-
-        if (input_image.isNull())
-        {
-            qDebug() << "Erreur : Impossible de charger l'image d'entrée.";
-            return;
-        }
-
-        input_image.save(app_folder.filePath("../noise_pic.png"), "PNG");
-
-        QString denoise_path = app_folder.filePath("../denoise_pic.png");
-        QString noise_input_path = app_folder.filePath("../noise_pic.png");
-
-        QProcess *process = new QProcess(this);
-        process->setProgram("/net/apps/anaconda3/bin/python3");
-        process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_path);
-
-        process->start();
-        process->waitForFinished(-1);
-
-        qDebug() << "c'est bon ! ";
-
-        delete process;*/
-
-
         QDir app_folder = QCoreApplication::applicationDirPath();
 
-        qDebug() << app_folder;
-
-        //QString cheminScript = app_folder.filePath("../preEntraine_test_Restormer.py");
         QString cheminScript = app_folder.filePath("../QT/preEntraine_test_Restormer.py");
         QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+
         QImage input_image(noise_path);
         if (input_image.isNull())
         {
