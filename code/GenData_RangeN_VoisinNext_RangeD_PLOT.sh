@@ -12,184 +12,42 @@ puissance='0.5 0.7 1 1.3 1.5 1.7 2'
 ponderation='0.25 0.5 0.75'
 tailleRecherche='10 20 30'
 
-Gaussien()
-{
-    sh GenImg.sh $DB N GAU $1 $2
-    DirN=GAU\_$1\_$2
-
-      # Filtre Moyenneur
-    for v in $voisins 
-    do
-        DirD=$DirN\_MOY\_$v
-        FileF=GAU_MOY
-
-        sh GenImg.sh $DB D $DirN MOY $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-   # Filtre Médian
-    for v in $voisins 
-    do
-        DirD=$DirN\_MED\_$v
-        FileF=GAU_MED
-
-        sh GenImg.sh $DB D $DirN MED $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 3 $v $1 $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-     # Filtre Gaussien
-    for v in $voisins 
-    do
-        for mean in $mean_GAU
-        do
-            for var in $var_GAU
-            do
-                DirD=$DirN\_GAU\_$v\_$mean\_$var
-                FileF=GAU_GAU
-
-                sh GenImg.sh $DB D $DirN GAU $v $mean $var
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 5 $v $mean $var $1 $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
-
-     # Filtre Gradient 
-    for v in $voisins 
-    do
-        for c in 0 1 
-        do
-            DirD=$DirN\_GRA\_$v\_$c
-            FileF=GAU_GRA
-
-            sh GenImg.sh $DB D $DirN GRA $v $c
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $c $1 $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Filtre Pondéré
-    for v in $voisins 
-    do
-        for p in $puissance
-        do
-            DirD=$DirN\_PON\_$v\_$p
-            FileF=GAU_PON
-
-            sh GenImg.sh $DB D $DirN PON $v $p
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 4 $v $p $1 $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Non Local Mean
-    for p in $ponderation
-    do
-        for t in $tailleRecherche
-        do
-            for v in $voisinsNLM 
-            do
-                DirD=$DirN\_NLM\_$p\_$t\_$v
-                FileF=GAU_NLM
-
-                sh GenImg.sh $DB D $DirN NLM $p $t $v
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 5 $p $t $v $1 $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
-
-    sh GenImg.sh DB/$DB\_N/$DirN R 
-}
-
 RunGaussien()
 {
     Range_Mean='0 1 2'
     Range_STD='2.5 5 7.5 10 15 20 25 35'
 
-       # Filtre Moyenneur
+       # Filtre meanur
     for m in $Range_Mean
     do
-        ./Plot $DB GAU_MOY voisins V moyenne $m ecart-type 1
+        ./Plot $DB GAU_MOY voisins V mean $m std 1
     done
     
     for std in $Range_STD
     do
-        ./Plot $DB GAU_MOY voisins V moyenne 0 ecart-type $std
+        ./Plot $DB GAU_MOY voisins V mean 0 std $std
     done
 
     for v in $voisins 
     do
-        for std in $Range_STD
-        do
-            ./Plot $DB GAU_MOY voisins $v moyenne M ecart-type $std
-        done
-        ./Plot $DB GAU_MOY voisins $v moyenne 0 ecart-type E
+        ./Plot $DB GAU_MOY voisins $v mean 0 std E
     done
     
 
        # Filtre Médian
     for m in $Range_Mean
     do
-        ./Plot $DB GAU_MED voisins V moyenne $m ecart-type 1
+        ./Plot $DB GAU_MED voisins V mean $m std 1
     done
     
     for std in $Range_STD
     do
-        ./Plot $DB GAU_MED voisins V moyenne 0 ecart-type $std
+        ./Plot $DB GAU_MED voisins V mean 0 std $std
     done
 
     for v in $voisins 
     do
-        for std in $Range_STD
-        do
-            ./Plot $DB GAU_MED voisins $v moyenne M ecart-type $std
-        done
-        ./Plot $DB GAU_MED voisins $v moyenne 0 ecart-type E
+        ./Plot $DB GAU_MED voisins $v mean 0 std E
     done
     
 
@@ -200,12 +58,12 @@ RunGaussien()
         do
             for m in $Range_Mean
             do
-                ./Plot $DB GAU_GAU voisins V moyenne_debruit $mean ecart-type_debruit $var moyenne_bruit $m ecart-type_bruit 1
+                ./Plot $DB GAU_GAU voisins V meanD $mean stdD $var meanN $m stdN 1
             done
             
             for std in $Range_STD
             do
-                ./Plot $DB GAU_GAU voisins V moyenne_debruit $mean ecart-type_debruit $var moyenne_bruit 0 ecart-type_bruit $std
+                ./Plot $DB GAU_GAU voisins V meanD $mean stdD $var meanN 0 stdN $std
             done
         done
     done
@@ -215,12 +73,12 @@ RunGaussien()
         do
             for m in $Range_Mean
             do
-                ./Plot $DB GAU_GAU voisins $v moyenne_debruit 0 ecart-type_debruit E moyenne_bruit $m ecart-type_bruit 1
+                ./Plot $DB GAU_GAU voisins $v meanD 0 stdD E meanN $m stdN 1
             done
             
             for std in $Range_STD
             do
-                ./Plot $DB GAU_GAU voisins $v moyenne_debruit 0 ecart-type_debruit E moyenne_bruit 0 ecart-type_bruit $std
+                ./Plot $DB GAU_GAU voisins $v meanD 0 stdD E meanN 0 stdN $std
             done
         done
     done
@@ -228,34 +86,21 @@ RunGaussien()
 
      # Filtre Gradient 
     for c in 0 1 
-    do
-        for m in $Range_Mean
-        do
-            ./Plot $DB GAU_GRA voisins V type $c moyenne $m ecart-type 1
-        done
-        
+    do  
         for std in $Range_STD
         do
-            ./Plot $DB GAU_GRA voisins V type $c moyenne 0 ecart-type $std
+            ./Plot $DB GAU_GRA voisins V type $c mean 0 std $std
         done
         for v in $voisins 
         do
-            for m in $Range_Mean
-            do
-                ./Plot $DB GAU_GRA voisins $v type $c moyenne $m ecart-type E
-            done
-            
-            for std in $Range_STD
-            do
-                ./Plot $DB GAU_GRA voisins $v type $c moyenne M ecart-type $std
-            done
+            ./Plot $DB GAU_GRA voisins $v type $c mean 0 std E
         done
     done
     for v in $voisins 
     do
         for std in $Range_STD
         do
-            ./Plot $DB GAU_GRA voisins $v type T moyenne 0 ecart-type $std
+            ./Plot $DB GAU_GRA voisins $v type T mean 0 std $std
         done
     done
     
@@ -265,21 +110,21 @@ RunGaussien()
     do
         for std in $Range_STD
         do
-            ./Plot $DB GAU_PON voisins $v puissance P moyenne 0 ecart-type $std
+            ./Plot $DB GAU_PON voisins $v pow P mean 0 std $std
         done
     done
     for p in $puissance
     do
         for std in $Range_STD
         do
-            ./Plot $DB GAU_PON voisins V puissance $p moyenne 0 ecart-type $std
+            ./Plot $DB GAU_PON voisins V pow $p mean 0 std $std
         done
     done
     for v in $voisins 
     do
         for p in $puissance
         do
-            ./Plot $DB GAU_PON voisins $v puissance $p moyenne 0 ecart-type E
+            ./Plot $DB GAU_PON voisins $v pow $p mean 0 std E
         done
     done
     
@@ -291,7 +136,7 @@ RunGaussien()
         do
             for v in $voisinsNLM 
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche $t ponderation $p moyenne 0 ecart-type E
+                ./Plot $DB GAU_NLM pond° $p ResSize $t voisins $v mean 0 std E
             done
         done
     done
@@ -301,7 +146,7 @@ RunGaussien()
         do
             for std in $Range_STD
             do
-                ./Plot $DB GAU_NLM voisins V tailleRecherche $t ponderation $p moyenne 0 ecart-type $std
+                ./Plot $DB GAU_NLM pond° $p ResSize $t voisins V mean 0 std $std 
             done
         done
     done
@@ -311,7 +156,7 @@ RunGaussien()
         do
             for std in $Range_STD
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche $t ponderation P moyenne 0 ecart-type $std
+                ./Plot $DB GAU_NLM pond° P ResSize $t voisins $v mean 0 std $std
             done
         done
     done
@@ -321,146 +166,11 @@ RunGaussien()
         do
             for std in $Range_STD
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche T ponderation $p moyenne 0 ecart-type $std
+                ./Plot $DB GAU_NLM pond° $p ResSize T voisins $v mean 0 std $std
             done
         done
     done
     
-}
-
-Other()
-{
-    sh GenImg.sh $DB N $1 $2
-    DirN=$1\_$2
-
-    
-      # Filtre Moyenneur
-    for v in $voisins 
-    do
-        DirD=$DirN\_MOY\_$v
-        FileF=$1\_MOY
-
-        sh GenImg.sh $DB D $DirN MOY $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 2 $v $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-     # Filtre Médian
-    for v in $voisins 
-    do
-        DirD=$DirN\_MED\_$v
-        FileF=$1\_MED
-
-        sh GenImg.sh $DB D $DirN MED $v
-        sh GenImg.sh $DB M $DirD
-        sh GenImg.sh $DB F $DirD $FileF 2 $v $2
-        sh GenImg.sh DB/$DB\_D/$DirD R 
-
-        for mode in PSNR SNR SSIM RMSE
-        do
-            rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-        done
-    done
-    
-
-     # Filtre Gaussien
-    for v in $voisins 
-    do
-        for mean in $mean_GAU
-        do
-            for var in $var_GAU
-            do
-                DirD=$DirN\_GAU\_$v\_$mean\_$var
-                FileF=$1\_GAU
-
-                sh GenImg.sh $DB D $DirN GAU $v $mean $var
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 4 $v $mean $var $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
-
-    # Filtre Gradient 
-    for v in $voisins 
-    do
-        for c in 0 1 
-        do
-            DirD=$DirN\_GRA\_$v\_$c
-            FileF=$1\_GRA
-
-            sh GenImg.sh $DB D $DirN GRA $v $c
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 3 $v $c $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Filtre Pondéré
-    for v in $voisins 
-    do
-        for p in $puissance
-        do
-            DirD=$DirN\_PON\_$v\_$p
-            FileF=$1\_PON
-
-            sh GenImg.sh $DB D $DirN PON $v $p
-            sh GenImg.sh $DB M $DirD
-            sh GenImg.sh $DB F $DirD $FileF 3 $v $p $2
-            sh GenImg.sh DB/$DB\_D/$DirD R 
-
-            for mode in PSNR SNR SSIM RMSE
-            do
-                rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-            done
-        done
-    done
-    
-
-     # Non Local Mean
-    for p in $ponderation
-    do
-        for t in $tailleRecherche
-        do
-            for v in $voisinsNLM 
-            do
-                DirD=$DirN\_NLM\_$p\_$t\_$v
-                FileF=$1\_NLM
-
-                sh GenImg.sh $DB D $DirN NLM $p $t $v
-                sh GenImg.sh $DB M $DirD
-                sh GenImg.sh $DB F $DirD $FileF 4 $p $t $v $2
-                sh GenImg.sh DB/$DB\_D/$DirD R 
-
-                for mode in PSNR SNR SSIM RMSE
-                do
-                    rm DB/$DB\_M/$mode/{$mode}\_$DirD.txt
-                done
-            done
-        done
-    done
-    
-
-    sh GenImg.sh DB/$DB\_N/$DirN R 
 }
 
 PlotOther()
@@ -469,7 +179,7 @@ PlotOther()
     NameArg=$2
     Range=$3
 
-       # Filtre Moyenneur
+       # Filtre mean
     for r in $Range
     do
         ./Plot $DB $N\_MOY voisins V $NameArg $r
@@ -500,12 +210,12 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB $N\_GAU voisins V moyenne_debruit $mean ecart-type_debruit $var $NameArg $r
+                ./Plot $DB $N\_GAU voisins V mean $mean std $var $NameArg $r
             done
 
             for v in $voisins 
             do
-                ./Plot $DB $N\_GAU voisins $v moyenne_debruit $mean ecart-type_debruit $var $NameArg R
+                ./Plot $DB $N\_GAU voisins $v mean $mean std $var $NameArg R
             done
         done
     done
@@ -515,7 +225,7 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB $N\_GAU voisins $v moyenne_debruit 0 ecart-type_debruit E $NameArg $r
+                ./Plot $DB $N\_GAU voisins $v mean 0 std E $NameArg $r
             done
         done
     done
@@ -543,8 +253,7 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB $N\_GRA voisins $v type 0 $NameArg $r
-                ./Plot $DB $N\_GRA voisins $v type 1 $NameArg $r
+                ./Plot $DB $N\_GRA voisins $v type T $NameArg $r
             done
         done
     done
@@ -555,21 +264,21 @@ PlotOther()
     do
         for r in $Range
         do
-            ./Plot $DB GAU_PON voisins $v puissance P $NameArg $r
+            ./Plot $DB $N\_PON voisins $v pow P $NameArg $r
         done
     done
     for p in $puissance
     do
         for r in $Range
         do
-            ./Plot $DB GAU_PON voisins V puissance $p $NameArg $r
+            ./Plot $DB $N\_PON voisins V pow $p $NameArg $r
         done
     done
     for v in $voisins 
     do
         for p in $puissance
         do
-            ./Plot $DB GAU_PON voisins $v puissance $p $NameArg R
+            ./Plot $DB $N\_PON voisins $v pow $p $NameArg R
         done
     done
 
@@ -580,7 +289,7 @@ PlotOther()
         do
             for v in $voisinsNLM 
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche $t ponderation $p $NameArg R
+                ./Plot $DB $N\_NLM pond° $p ResSize $t voisins $v $NameArg R
             done
         done
     done
@@ -590,7 +299,7 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB GAU_NLM voisins V tailleRecherche $t ponderation $p $NameArg $r
+                ./Plot $DB $N\_NLM pond° $p ResSize $t voisins V $NameArg $r
             done
         done
     done
@@ -600,7 +309,7 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche $t ponderation P $NameArg $r
+                ./Plot $DB $N\_NLM pond° P ResSize $t voisins $v $NameArg $r
             done
         done
     done
@@ -610,7 +319,7 @@ PlotOther()
         do
             for r in $Range
             do
-                ./Plot $DB GAU_NLM voisins $v tailleRecherche T ponderation $p $NameArg $r
+                ./Plot $DB $N\_NLM pond° $p ResSize T voisins $v $NameArg $r
             done
         done
     done
@@ -618,59 +327,27 @@ PlotOther()
 
 RunPoivreEtSel()
 {
-    Range_prop='0.025 0.05 0.075 0.1 0.15 0.2 0.25 0.35'
-    PlotOther PES proportion $Range_prop
-    exit
-
-    for prop in $Range_prop
-    do
-        Other PES $prop
-    done
-
-    # PlotOther PES proportion $Range_prop
+    Range_prop='0.03 0.05 0.07 0.1 0.15 0.2 0.25 0.35'
+    PlotOther PES proport° $Range_prop
 }
     
 
 RunPoisson()
 {
     Range_moy='2.5 5 7.5 10 15 20 25 35'
-    PlotOther POI moyenne_poisson $Range_moy
-    exit
-
-    for moy in $Range_moy
-    do
-        Other POI $moy
-    done
-
-    # PlotOther POI moyenne_poisson $Range_moy
+    PlotOther POI meanPOI $Range_moy
 }
 
 RunImpulsif()
 {
     Range_fact='2.5 5 7.5 10 15 20 25 35'
-    PlotOther IMP facteur $Range_fact
-    exit
-
-    for fact in $Range_fact
-    do
-        Other IMP $fact
-    done
-
-    # PlotOther IMP facteur $Range_fact
+    PlotOther IMP fact $Range_fact
 }
 
 RunSpeckle()
 {
     Range_intens='2.5 5 7.5 10 15 20 25 35'
-    PlotOther SPE intensite $Range_intens
-    exit
-
-    for intens in $Range_intens
-    do
-        Other SPE $intens
-    done
-
-    # PlotOther SPE intensite $Range_intens
+    PlotOther SPE intens $Range_intens
 }
 
 if [ "$2" = "GAU" ]
@@ -687,4 +364,3 @@ then
     RunPoisson 
     RunSpeckle 
 fi
-

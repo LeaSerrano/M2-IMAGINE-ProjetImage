@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    std::string modes[4] = { std::string("PSNR"),  std::string("SNR"), std::string("SSIM"), std::string("RMSE") };
-    std::string colors[4] = { "#FF0000", "#0066CC", "#336600", "#990099" };
+    std::string modes[4] = { std::string("PSNR"),  std::string("SNR"), std::string("RMSE") };
+    std::string colors[4] = { "#FF0000", "#0066CC", "#990099" };
     std::string DB( argv[1] );
     std::string TxtFileData( argv[2] );
 
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    for( uint i = 0; i < 4; i++ )
+    for( uint i = 0; i < 3; i++ )
     {
         std::string mode( modes[i] );
         std::string color( colors[i] );
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
                 }
             
             if( to_insert )
-                fprintf( fOut, "%f %.2f %f\n", Mean, Var, Val );
+                fprintf( fOut, "%f %.2f %f\n", (i==1)?(-Mean):(Mean), Var, Val );
         }
 
         fclose(fIn);
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
         gnuplotScript << "MIN_X=STATS_min\n";
         gnuplotScript << "set yrange [MIN_Y-(MAX_Y-MIN_Y)*ALPHA:MAX_Y+(MAX_Y-MIN_Y)*ALPHA]\n";
         gnuplotScript << "set xrange [MIN_X-(MAX_X-MIN_X)*ALPHA:MAX_X+(MAX_X-MIN_X)*ALPHA]\n";
-        gnuplotScript << "set terminal png\n";
+        gnuplotScript << "set terminal png size 800,450\n";
         gnuplotScript << "set output '" << PngFileOut << "'\n";
         gnuplotScript << "set title '" << PlotTitle << "'\n";
         gnuplotScript << "set xlabel '" << Nom_Args[ArgV] <<"'\n";

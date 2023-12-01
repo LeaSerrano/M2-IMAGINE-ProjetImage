@@ -81,6 +81,19 @@ then
             ./Mesure $ImgInLoc$eachfile $DImg$eachfile $mode $txtfile
         done
     done
+
+    ImgsIn=`ls ./DB/CID22_pgm/`
+    DImg="./DB/CID22_pgm/"
+
+    for eachfile in $ImgsIn
+    do
+        for mode in SNR 
+        do
+            txtfile="./{$mode}_CID22_pgm.txt"
+
+            ./Mesure $DImg$eachfile $DImg$eachfile $mode $txtfile
+        done
+    done
 elif [ "$2" = "F" ] 
 then 
     for mode in PSNR SNR SSIM RMSE
