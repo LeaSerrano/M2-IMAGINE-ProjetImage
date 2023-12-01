@@ -362,7 +362,11 @@ qrc_style.cpp: ../QT/style.qrc \
 		/usr/lib/qt5/bin/rcc \
 		../QT/background.png \
 		../QT/logo.png \
-		../QT/stylesheet.qss
+		../QT/download_icon_white.png \
+		../QT/download_icon_black.png \
+		../QT/stylesheet.qss \
+		../QT/upload_icon_white.png \
+		../QT/upload_icon_black.png
 	/usr/lib/qt5/bin/rcc -name style ../QT/style.qrc -o qrc_style.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
@@ -405,7 +409,7 @@ main.o: ../QT/main.cpp ../QT/mainwindow.h
 
 mainwindow.o: ../QT/mainwindow.cpp ../QT/mainwindow.h \
 		ui_mainwindow.h \
-		../QT/our_functions.h \
+		../QT/Functions_Noise_Denoise.cpp \
 		../QT/image_ppm.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../QT/mainwindow.cpp
 

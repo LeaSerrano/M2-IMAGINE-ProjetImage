@@ -391,32 +391,40 @@ void MainWindow::on_submit_button_denoise_clicked()
     }
     else if(selected_algo == "RESTORMER") {
         /*QDir app_folder = QCoreApplication::applicationDirPath();
-        QString cheminScript = app_folder.filePath("../preEntraine_test_Restormer.py");
+        QString cheminScript = app_folder.filePath("preEntraine_test_Restormer.py");
+        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+        QImage input_image(noise_path);
+
+        if (input_image.isNull())
+        {
+            qDebug() << "Erreur : Impossible de charger l'image d'entrée.";
+            return;
+        }
+
+        input_image.save(app_folder.filePath("../noise_pic.png"), "PNG");
+
+        QString denoise_path = app_folder.filePath("../denoise_pic.png");
+        QString noise_input_path = app_folder.filePath("../noise_pic.png");
 
         QProcess *process = new QProcess(this);
-        process->setProgram("python3");
-        process->setArguments(QStringList() << cheminScript);
+        process->setProgram("/net/apps/anaconda3/bin/python3");
+        process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_path);
 
         process->start();
         process->waitForFinished(-1);
 
-        QByteArray resultat = process->readAllStandardOutput();
-        qDebug() << "Résultat de l'exécution du script Python : " << resultat;
-
-            if (process->error() != QProcess::UnknownError)
-        {
-            qDebug() << "Erreur lors de l'exécution du script Python : " << process->errorString();
-        }
+        qDebug() << "c'est bon ! ";
 
         delete process;*/
 
-        QDir app_folder = QCoreApplication::applicationDirPath();
-        QString cheminScript = app_folder.filePath("../preEntraine_test_Restormer.py");
-        //QString input_filepath = "/chemin/vers/votre/image.jpg";  // Remplacez par le chemin de votre image
-        //QString out_dir = "/chemin/vers/votre/repertoire_sortie/";  // Remplacez par le répertoire de sortie
-        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
-        QString denoise_path = app_folder.filePath("../denoise_pic.png");
 
+        QDir app_folder = QCoreApplication::applicationDirPath();
+
+        qDebug() << app_folder;
+
+        //QString cheminScript = app_folder.filePath("../preEntraine_test_Restormer.py");
+        QString cheminScript = app_folder.filePath("../QT/preEntraine_test_Restormer.py");
+        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
         QImage input_image(noise_path);
         if (input_image.isNull())
         {
@@ -424,24 +432,39 @@ void MainWindow::on_submit_button_denoise_clicked()
                 return;
         }
 
-        input_image.save(denoise_path, "PNG");
+        input_image.save("../noise_pic.png", "PNG");
+
+        QString denoise_input_path = app_folder.filePath("../denoise_pic.png");
+        QString noise_input_path = app_folder.filePath("../noise_pic.png");
 
         QProcess *process = new QProcess(this);
-        process->setProgram("python3");
-        process->setArguments(QStringList() << cheminScript << noise_path << denoise_path);
+        process->setProgram("/net/apps/anaconda3/bin/python3");
+        process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_input_path);
 
         process->start();
         process->waitForFinished(-1);
 
-        QByteArray resultat = process->readAllStandardOutput();
-        qDebug() << "Résultat de l'exécution du script Python : " << resultat;
+        delete process;
 
-            if (process->error() != QProcess::UnknownError)
-        {
-            qDebug() << "Erreur lors de l'exécution du script Python : " << process->errorString();
+        QImage image(denoise_input_path);
+        QString denoise_path;
+
+        if (extensionImageIn == "ppm") {
+            QImage ppmImage = image.convertToFormat(QImage::Format_RGB32);
+            ppmImage.save("../denoise_pic.ppm");
+            denoise_path = "../denoise_pic.ppm";
+        }
+        else {
+            QImage pgmImage = image.convertToFormat(QImage::Format_Grayscale8);
+            pgmImage.save("../denoise_pic.pgm");
+            denoise_path = "../denoise_pic.pgm";
         }
 
-        delete process;
+        QString cheminNoisePic = "../noise_pic.png";
+        QFile::remove(cheminNoisePic);
+
+        QString cheminDenoisePic = "../denoise_pic.png";
+        QFile::remove(cheminDenoisePic);
     }
 
 
