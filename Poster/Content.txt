@@ -34,6 +34,15 @@ De ces mesures, nous traçons des courbes et déduisons les meilleures méthodes
 -------------------------------- Description graphique de la pipeline du projet ( avec images d'exemple )
 
 DESSIN
+ Description graphique de la pipeline du projet ( avec image d’exemple ) : 
+Images d’origine ( base de données ) – ( types de bruit : liste )   
+image bruitée – ( méthodes de débruitage : liste )   
+images débruitée 
+
+Image d’origine + images débruitée  
+mesure de qualité de la méthode de débruitage selon le bruit : liste  
+conclusion
+
 
 BRUIT
 - Poivre et sel : simule le malfonctionnement des capteurs ou l'inefficité d'un programme de traitement d'image
