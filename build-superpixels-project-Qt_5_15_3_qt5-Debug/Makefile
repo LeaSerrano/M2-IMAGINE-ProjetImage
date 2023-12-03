@@ -155,7 +155,7 @@ TARGET        = superpixels-project
 first: all
 ####### Build rules
 
-superpixels-project: ui_mainwindow.h $(OBJECTS)  
+superpixels-project: ui_mainwindow.h ui_mainwindow_copier.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../QT/superpixels-project.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -349,7 +349,7 @@ distdir: FORCE
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../QT/image_ppm.h ../QT/mainwindow.h ../QT/our_functions.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../QT/main.cpp ../QT/mainwindow.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../QT/mainwindow.ui $(DISTDIR)/
+	$(COPY_FILE) --parents ../QT/mainwindow.ui ../QT/mainwindow_copier.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -378,7 +378,9 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_style.cpp
 qrc_style.cpp: ../QT/style.qrc \
 		/usr/lib/qt5/bin/rcc \
+		../QT/calculate_icon_white.png \
 		../QT/background.png \
+		../QT/calculate_icon_black.png \
 		../QT/logo.png \
 		../QT/download_icon_white.png \
 		../QT/download_icon_black.png \
@@ -405,12 +407,16 @@ compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_mainwindow.h
+compiler_uic_make_all: ui_mainwindow.h ui_mainwindow_copier.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_mainwindow.h
+	-$(DEL_FILE) ui_mainwindow.h ui_mainwindow_copier.h
 ui_mainwindow.h: ../QT/mainwindow.ui \
 		/usr/lib/qt5/bin/uic
 	/usr/lib/qt5/bin/uic ../QT/mainwindow.ui -o ui_mainwindow.h
+
+ui_mainwindow_copier.h: ../QT/mainwindow_copier.ui \
+		/usr/lib/qt5/bin/uic
+	/usr/lib/qt5/bin/uic ../QT/mainwindow_copier.ui -o ui_mainwindow_copier.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:

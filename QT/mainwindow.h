@@ -28,7 +28,7 @@ public slots:
     void on_submit_button_noise_clicked();
     void on_submit_button_denoise_clicked();
     //void on_download_comp_button_clicked();
-    void on_submit_button_download_clicked();
+    //void on_submit_button_download_clicked();
     //void on_compress_button_clicked();
     /*void on_select_pal_clicked();
     void on_select_index_clicked();
@@ -37,6 +37,8 @@ public slots:
     //void on_decomp_button_clicked();
     void on_noise_algo_selected(int index);
     void on_denoise_algo_selected(int index);
+    void on_submit_button_download_clicked();
+    void saveImage(const QString &filePath);
 
 private:
     Ui::MainWindow *ui;
