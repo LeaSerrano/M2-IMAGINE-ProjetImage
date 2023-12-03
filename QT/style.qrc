@@ -7,5 +7,7 @@
         <file>download_icon_black.png</file>
         <file>upload_icon_black.png</file>
         <file>upload_icon_white.png</file>
+        <file>calculate_icon_white.png</file>
+        <file>calculate_icon_black.png</file>
     </qresource>
 </RCC>

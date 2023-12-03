@@ -72,6 +72,17 @@ QPushButton:hover#uploadButton {
 QPushButton:pressed#uploadButton {
     border-image: url(:/stylesheet/upload_icon_white.png) 0 0 0 0 stretch stretch;
 }
+QPushButton#algoButton {
+    border: none;
+    border-image: url(:/stylesheet/calculate_icon_white.png) 0 0 0 0 stretch stretch;
+    background-color : None;
+}
+QPushButton:hover#algoButton {
+    border-image: url(:/stylesheet/calculate_icon_black.png) 0 0 0 0 stretch stretch;
+}
+QPushButton:pressed#algoButton {
+    border-image: url(:/stylesheet/calculate_icon_white.png) 0 0 0 0 stretch stretch;
+}
 QLineEdit {
         border-width: 1px;
         border-style: solid;
