@@ -19,7 +19,8 @@ HEADERS += \
     our_functions.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mainwindow_copier.ui
 
 RESOURCES += \
     style.qrc

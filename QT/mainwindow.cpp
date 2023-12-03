@@ -10,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+
+    setFixedSize(1106, 719);
+
+
+
     //QPixmap logoPixmap(":/stylesheet/logo.png");
     //logoPixmap = logoPixmap.scaled(logoPixmap.width() * 2, logoPixmap.height() * 2);
     //ui->logoLabel->setPixmap(logoPixmap);
@@ -19,16 +25,18 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->logoLabel->setStyleSheet("color: #704257; font-size: 20px;");
     //ui->logoLabel->setAlignment(Qt::AlignCenter);
 
-    ui->fond_image_1->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
-    ui->fond_image_2->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
-    ui->fond_image_3->setStyleSheet("background-color: #3d3e42; border-radius: 30px;");
+    ui->fond_image_1->setStyleSheet("background-color: #3d3e42;");
 
     ui->frame_1->setObjectName("styledFrame");
     ui->frame_2->setObjectName("styledFrame");
-    ui->frame_3->setObjectName("styledFrame");
 
-    ui->download_button_1->setObjectName("downloadButton");
+    ui->frame_21->setStyleSheet("color : #3d3e42;");
+    ui->frame_23->setStyleSheet("color : #3d3e42;");
+    ui->frame_22->setStyleSheet("color : #202124;");
+
+    ui->download_button->setObjectName("downloadButton");
     ui->upload_button->setObjectName("uploadButton");
+    ui->algo_button->setObjectName("algoButton");
 
     ui->select_1_bruit->hide();
     ui->select_2_bruit->hide();
@@ -38,14 +46,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->select_3_debruit->hide();
     ui->select_4_debruit->hide();
 
-    ui->select_format1->hide();
+    ui->start_frame->setStyleSheet("border : transparent;");
 
     connect(ui->select_algo_bruit, SIGNAL(currentIndexChanged(int)), this, SLOT(on_noise_algo_selected(int)));
     connect(ui->select_algo_debruit, SIGNAL(currentIndexChanged(int)), this, SLOT(on_denoise_algo_selected(int)));
     connect(ui->upload_button, SIGNAL(clicked()), this, SLOT(on_submit_button_upload_clicked()));
-    connect(ui->download_button_1, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
+    connect(ui->download_button, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
     connect(ui->submit_button_noise, SIGNAL(clicked()), this, SLOT(on_submit_button_noise_clicked()));
     connect(ui->submit_button_denoise, SIGNAL(clicked()), this, SLOT(on_submit_button_denoise_clicked()));
+    connect(ui->download_button, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
 
 }
 
@@ -58,6 +67,7 @@ QString extensionImageIn;
 
 /*--------------------- ALGORITHMES POUR QT ---------------------*/
 
+/*
 void copieFichier(const QString filepath, const QString newName)
 {
     QFile sourceFile(filepath);
@@ -98,7 +108,60 @@ void downloadAs(const QString& inputFilePath, const QString& outputFilePath, con
         image.save(outputFilePath, "PNG");
     if (format == "JPG")
         image.save(outputFilePath, "JPG");
+}*/
+
+void MainWindow::on_submit_button_download_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), "", tr("Images (*.png *.jpg *.jpeg *.ppm *.pgm)"));
+
+    if (!filePath.isEmpty()) {
+        saveImage(filePath);
+        QMessageBox::information(this, tr("Téléchargement terminé"), tr("L'image a été téléchargée avec succès."));
+    } else {
+        // L'utilisateur a annulé la sélection du fichier
+        QMessageBox::information(this, tr("Annulé"), tr("Le téléchargement a été annulé."));
+    }
 }
+
+void MainWindow::saveImage(const QString &filePath)
+{
+    QPixmap pixmap = ui->start_label->pixmap(Qt::ReturnByValue);
+
+    // Vérifiez si le QPixmap est valide
+    if (!pixmap.isNull()) {
+        // Convertissez le QPixmap en QImage
+        QImage image = pixmap.toImage();
+
+        if (image.isNull()) {
+            QMessageBox::warning(this, tr("Erreur"), tr("Impossible de charger l'image."));
+            return;
+        }
+
+        QFileInfo fileInfo(filePath);
+        QString extension = fileInfo.completeSuffix();
+
+        if (extension.toLower() == "pgm") {
+            if (!image.save(filePath, "PGM")) {
+                QMessageBox::warning(this, tr("Erreur"), tr("Impossible d'enregistrer l'image."));
+            }
+        } else if (extension.toLower() == "ppm") {
+            if (!image.save(filePath, "PPM")) {
+                QMessageBox::warning(this, tr("Erreur"), tr("Impossible d'enregistrer l'image."));
+            }
+        } else if (extension.toLower() == "png") {
+            if (!image.save(filePath, "PNG")) {
+                QMessageBox::warning(this, tr("Erreur"), tr("Impossible d'enregistrer l'image."));
+            }
+        } else if (extension.toLower() == "jpg" || extension.toLower() == "jpeg") {
+            if (!image.save(filePath, "JPEG")) {
+                QMessageBox::warning(this, tr("Erreur"), tr("Impossible d'enregistrer l'image."));
+            }
+        } else {
+            QMessageBox::warning(this, tr("Erreur"), tr("Format d'image non pris en charge."));
+        }
+    }
+}
+
 
 void MainWindow::on_submit_button_upload_clicked()
 {
@@ -212,7 +275,7 @@ void MainWindow::on_submit_button_noise_clicked()
     QPixmap image(noise_path);
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-        ui->seg_label->setPixmap(scaledImage);
+        ui->start_label->setPixmap(scaledImage);
     }
 }
 
@@ -441,7 +504,7 @@ void MainWindow::on_submit_button_denoise_clicked()
     QPixmap image(denoise_path);
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-        ui->decomp_label->setPixmap(scaledImage);
+        ui->start_label->setPixmap(scaledImage);
     }
 }
 
@@ -467,7 +530,7 @@ void MainWindow::on_submit_button_denoise_clicked()
     }
 }*/
 
-void MainWindow::on_submit_button_download_clicked()
+/*void MainWindow::on_submit_button_download_clicked()
 {
     //QString selected_format = ui->select_format2->currentText();
 
@@ -491,14 +554,14 @@ void MainWindow::on_submit_button_download_clicked()
                                                 tr("Images (*.jpg)"));
     }*/
 
-    fileName = QFileDialog::getSaveFileName(this, tr("Sauvegarder l'image"),
+    /*fileName = QFileDialog::getSaveFileName(this, tr("Sauvegarder l'image"),
                                             QDir::homePath(),
                                             tr("Images (*.jpg, png, ppm, pgm)"));
 
     QString format = fileName.right(3);
 
     downloadAs(res_path, fileName, format);
-}
+}*/
 
 /*void MainWindow::on_compress_button_clicked()
 {
