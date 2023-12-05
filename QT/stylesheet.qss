@@ -83,6 +83,17 @@ QPushButton:hover#algoButton {
 QPushButton:pressed#algoButton {
     border-image: url(:/stylesheet/calculate_icon_white.png) 0 0 0 0 stretch stretch;
 }
+QPushButton#metricButton {
+    border: none;
+    border-image: url(:/stylesheet/analytics_icon_white.png) 0 0 0 0 stretch stretch;
+    background-color : None;
+}
+QPushButton:hover#metricButton {
+    border-image: url(:/stylesheet/analytics_icon_black.png) 0 0 0 0 stretch stretch;
+}
+QPushButton:pressed#metricButton {
+    border-image: url(:/stylesheet/analytics_icon_white.png) 0 0 0 0 stretch stretch;
+}
 QLineEdit {
         border-width: 1px;
         border-style: solid;

@@ -9,5 +9,9 @@
         <file>upload_icon_white.png</file>
         <file>calculate_icon_white.png</file>
         <file>calculate_icon_black.png</file>
+        <file>calculate_icon_gray.png</file>
+        <file>analytics_icon_black.png</file>
+        <file>analytics_icon_white.png</file>
+        <file>analytics_icon_gray.png</file>
     </qresource>
 </RCC>
