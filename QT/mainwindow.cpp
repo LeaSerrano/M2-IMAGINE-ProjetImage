@@ -68,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label_help->setTextFormat(Qt::RichText);
     ui->label_help->setStyleSheet("white-space: pre;");
 
+    ui->algo_button_f3->setStyleSheet("border-image: url(:/stylesheet/calculate_icon_white.png) 0 0 0 0 stretch stretch;");
+
 }
 
 MainWindow::~MainWindow()
