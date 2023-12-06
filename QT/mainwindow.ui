@@ -27,22 +27,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="PSNR_label">
-    <property name="geometry">
-     <rect>
-      <x>1100</x>
-      <y>600</y>
-      <width>301</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
    <widget class="QFrame" name="frame_1">
     <property name="geometry">
      <rect>
@@ -102,8 +86,8 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>30</width>
-       <height>30</height>
+       <width>35</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="text">
@@ -113,10 +97,10 @@
     <widget class="QPushButton" name="download_button">
      <property name="geometry">
       <rect>
-       <x>60</x>
+       <x>70</x>
        <y>20</y>
-       <width>30</width>
-       <height>30</height>
+       <width>35</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="text">
@@ -125,6 +109,9 @@
     </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>780</x>
@@ -214,7 +201,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Débruitage :</string>
+      <string>Débruitage</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -292,12 +279,12 @@
     </widget>
     <widget class="QLabel" name="label_1_bruit">
      <property name="enabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>170</y>
+       <y>180</y>
        <width>131</width>
        <height>25</height>
       </rect>
@@ -308,12 +295,12 @@
     </widget>
     <widget class="QLabel" name="label_2_bruit">
      <property name="enabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>200</y>
+       <y>210</y>
        <width>131</width>
        <height>25</height>
       </rect>
@@ -329,7 +316,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>170</y>
+       <y>180</y>
        <width>111</width>
        <height>25</height>
       </rect>
@@ -348,7 +335,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>200</y>
+       <y>210</y>
        <width>111</width>
        <height>25</height>
       </rect>
@@ -357,11 +344,11 @@
       <double>0.500000000000000</double>
      </property>
     </widget>
-    <widget class="QFrame" name="frame_21">
+    <widget class="QFrame" name="frame_21_1">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>60</y>
+       <y>70</y>
        <width>311</width>
        <height>91</height>
       </rect>
@@ -376,7 +363,7 @@
       <number>2</number>
      </property>
     </widget>
-    <widget class="QFrame" name="frame_22">
+    <widget class="QFrame" name="frame_22_1">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -395,7 +382,7 @@
       <number>2</number>
      </property>
     </widget>
-    <widget class="QFrame" name="frame_23">
+    <widget class="QFrame" name="frame_23_1">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -418,7 +405,7 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>250</y>
+       <y>260</y>
        <width>131</width>
        <height>41</height>
       </rect>
@@ -431,14 +418,14 @@
      <property name="geometry">
       <rect>
        <x>60</x>
-       <y>120</y>
+       <y>130</y>
        <width>187</width>
        <height>24</height>
       </rect>
      </property>
      <item>
       <property name="text">
-       <string/>
+       <string>Sélection bruit</string>
       </property>
      </item>
      <item>
@@ -471,7 +458,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>44</y>
+       <y>54</y>
        <width>311</width>
        <height>61</height>
       </rect>
@@ -494,7 +481,7 @@
      </property>
      <item>
       <property name="text">
-       <string/>
+       <string>Sélection débruitage</string>
       </property>
      </item>
      <item>
@@ -538,24 +525,11 @@
       </property>
      </item>
     </widget>
-    <widget class="QPushButton" name="algo_button">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>10</y>
-       <width>35</width>
-       <height>35</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QFrame" name="frame_27">
+    <widget class="QFrame" name="frame_24_1">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>20</y>
+       <y>24</y>
        <width>311</width>
        <height>61</height>
       </rect>
@@ -570,34 +544,260 @@
       <number>2</number>
      </property>
     </widget>
-    <zorder>label_1_debruit</zorder>
-    <zorder>label_4_debruit</zorder>
-    <zorder>submit_button_denoise</zorder>
-    <zorder>label_2_debruit</zorder>
-    <zorder>label_3_debruit</zorder>
-    <zorder>label_3</zorder>
-    <zorder>select_1_debruit</zorder>
-    <zorder>select_2_debruit</zorder>
-    <zorder>select_4_debruit</zorder>
-    <zorder>select_3_debruit</zorder>
-    <zorder>label_1_bruit</zorder>
-    <zorder>label_2_bruit</zorder>
-    <zorder>select_1_bruit</zorder>
-    <zorder>select_2_bruit</zorder>
-    <zorder>frame_21</zorder>
-    <zorder>frame_22</zorder>
-    <zorder>frame_23</zorder>
-    <zorder>submit_button_noise</zorder>
-    <zorder>select_algo_bruit</zorder>
-    <zorder>label_2</zorder>
-    <zorder>select_algo_debruit</zorder>
-    <zorder>frame_27</zorder>
-    <zorder>algo_button</zorder>
+    <widget class="QPushButton" name="metric_button_f2">
+     <property name="geometry">
+      <rect>
+       <x>225</x>
+       <y>10</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="algo_button_f2">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>10</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
-   <zorder>logoLabel</zorder>
-   <zorder>PSNR_label</zorder>
-   <zorder>frame_2</zorder>
-   <zorder>frame_1</zorder>
+   <widget class="QFrame" name="frame_3">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>10</y>
+      <width>311</width>
+      <height>676</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_help">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>410</y>
+       <width>271</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>333</y>
+       <width>311</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Choisir son débruitage</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_psnr">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>170</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_snr">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>220</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QFrame" name="frame_21_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>70</y>
+       <width>311</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QFrame" name="frame_22_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>300</y>
+       <width>311</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QFrame" name="frame_23_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>350</y>
+       <width>311</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>54</y>
+       <width>311</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Métriques</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QFrame" name="frame_24_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>24</y>
+       <width>311</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="metric_button_f3">
+     <property name="geometry">
+      <rect>
+       <x>225</x>
+       <y>10</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="algo_button_f3">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>10</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_ssim">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>170</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_rmse">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>220</y>
+       <width>131</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

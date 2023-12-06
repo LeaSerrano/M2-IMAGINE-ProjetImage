@@ -39,6 +39,8 @@ public slots:
     void on_denoise_algo_selected(int index);
     void on_submit_button_download_clicked();
     void saveImage(const QString &filePath);
+    void on_submit_button_algo_clicked();
+    void on_submit_button_metric_clicked();
 
 private:
     Ui::MainWindow *ui;

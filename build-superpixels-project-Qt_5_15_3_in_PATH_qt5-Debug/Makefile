@@ -360,10 +360,16 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_style.cpp
 qrc_style.cpp: ../QT/style.qrc \
 		/usr/lib/qt5/bin/rcc \
+		../QT/calculate_icon_gray.png \
+		../QT/calculate_icon_white.png \
 		../QT/background.png \
+		../QT/calculate_icon_black.png \
 		../QT/logo.png \
 		../QT/download_icon_white.png \
 		../QT/download_icon_black.png \
+		../QT/analytics_icon_white.png \
+		../QT/analytics_icon_gray.png \
+		../QT/analytics_icon_black.png \
 		../QT/stylesheet.qss \
 		../QT/upload_icon_white.png \
 		../QT/upload_icon_black.png

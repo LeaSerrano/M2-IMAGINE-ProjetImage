@@ -27,7 +27,7 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QPushButton *download_button_2;
+    QPushButton *algo_button_f2;
     QFrame *decomp_frame;
     QLabel *decomp_label;
     QWidget *fond_image_3;
@@ -44,7 +44,7 @@ public:
     QFrame *seg_frame;
     QLabel *seg_label;
     QWidget *fond_image_2;
-    QPushButton *download_button;
+    QPushButton *download_button_1;
     QComboBox *select_format1;
     QLabel *label_2;
     QDoubleSpinBox *select_2_bruit;
@@ -74,9 +74,9 @@ public:
         MainWindow->resize(1472, 790);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        download_button_2 = new QPushButton(centralwidget);
-        download_button_2->setObjectName(QString::fromUtf8("download_button_2"));
-        download_button_2->setGeometry(QRect(1260, 690, 111, 24));
+        algo_button_f2 = new QPushButton(centralwidget);
+        algo_button_f2->setObjectName(QString::fromUtf8("download_button_2"));
+        algo_button_f2->setGeometry(QRect(1260, 690, 111, 24));
         decomp_frame = new QFrame(centralwidget);
         decomp_frame->setObjectName(QString::fromUtf8("decomp_frame"));
         decomp_frame->setGeometry(QRect(1100, 381, 300, 300));
@@ -145,9 +145,9 @@ public:
         fond_image_2->setGeometry(QRect(-10, -10, 321, 321));
         fond_image_2->raise();
         seg_label->raise();
-        download_button = new QPushButton(frame_2);
-        download_button->setObjectName(QString::fromUtf8("download_button_1"));
-        download_button->setGeometry(QRect(350, 690, 30, 30));
+        download_button_1 = new QPushButton(frame_2);
+        download_button_1->setObjectName(QString::fromUtf8("download_button_1"));
+        download_button_1->setGeometry(QRect(350, 690, 30, 30));
         select_format1 = new QComboBox(frame_2);
         select_format1->addItem(QString());
         select_format1->addItem(QString());
@@ -250,7 +250,7 @@ public:
         frame_2->raise();
         frame_3->raise();
         decomp_frame->raise();
-        download_button_2->raise();
+        algo_button_f2->raise();
         select_format2->raise();
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -268,7 +268,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        download_button_2->setText(QCoreApplication::translate("MainWindow", "T\303\251l\303\251charger", nullptr));
+        algo_button_f2->setText(QCoreApplication::translate("MainWindow", "T\303\251l\303\251charger", nullptr));
         decomp_label->setText(QString());
         logoLabel->setText(QString());
         PSNR_label->setText(QString());
@@ -280,7 +280,7 @@ public:
         upload_button->setText(QString());
         submit_button_noise->setText(QCoreApplication::translate("MainWindow", "Bruiter", nullptr));
         seg_label->setText(QString());
-        download_button->setText(QString());
+        download_button_1->setText(QString());
         select_format1->setItemText(0, QCoreApplication::translate("MainWindow", "PPM", nullptr));
         select_format1->setItemText(1, QCoreApplication::translate("MainWindow", "PNG", nullptr));
         select_format1->setItemText(2, QCoreApplication::translate("MainWindow", "JPG", nullptr));
