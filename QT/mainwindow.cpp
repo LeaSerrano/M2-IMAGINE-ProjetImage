@@ -424,57 +424,58 @@ void MainWindow::on_submit_button_denoise_clicked()
         NonLocalMeans((char*)noise_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData(), ponderation, tailleFenetreRecherche, tailleFenetre);
     }
     else if(selected_algo == "RESTORMER") {
-        QDir app_folder = QCoreApplication::applicationDirPath();
+            QDir app_folder = QCoreApplication::applicationDirPath();
 
-        QString cheminScript = app_folder.filePath("../QT/preEntraine_test_Restormer.py");
-        QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+            QString cheminScript = app_folder.filePath("../QT/preEntraine_test_Restormer.py");
+            QString noise_path = app_folder.filePath("../noise_pic." + extensionImageIn);
+            QImage input_image(noise_path);
+            if (input_image.isNull())
+            {
+                qDebug() << "Erreur : Impossible de charger l'image d'entrée.";
+                    return;
+            }
 
-        QImage input_image(noise_path);
-        if (input_image.isNull())
-        {
-            qDebug() << "Erreur : Impossible de charger l'image d'entrée.";
-                return;
+            input_image.save("../noise_pic.png", "PNG");
+
+            QString denoise_input_path = app_folder.filePath("../denoise_pic.png");
+            QString noise_input_path = app_folder.filePath("../noise_pic.png");
+
+            QProcess *process = new QProcess(this);
+            process->setProgram("/net/apps/anaconda3/bin/python3");
+            process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_input_path);
+
+            process->start();
+            process->waitForFinished(-1);
+
+            delete process;
+
+            QImage image(denoise_input_path);
+            QString denoise_path;
+
+            if (extensionImageIn == "ppm") {
+                QImage ppmImage = image.convertToFormat(QImage::Format_RGB32);
+                ppmImage.save("../denoise_pic.ppm");
+                denoise_path = "../denoise_pic.ppm";
+            }
+            else {
+                QImage pgmImage = image.convertToFormat(QImage::Format_Grayscale8);
+                pgmImage.save("../denoise_pic.pgm");
+                denoise_path = "../denoise_pic.pgm";
+            }
+
+            QString cheminNoisePic = "../noise_pic.png";
+            QFile::remove(cheminNoisePic);
+
+            QString cheminDenoisePic = "../denoise_pic.png";
+            QFile::remove(cheminDenoisePic);
         }
-
-        input_image.save("../noise_pic.png", "PNG");
-
-        QString denoise_input_path = app_folder.filePath("../denoise_pic.png");
-        QString noise_input_path = app_folder.filePath("../noise_pic.png");
-
-        QProcess *process = new QProcess(this);
-        process->setProgram("/net/apps/anaconda3/bin/python3");
-        process->setArguments(QStringList() << cheminScript << noise_input_path << denoise_input_path);
-
-        process->start();
-        process->waitForFinished(-1);
-
-        delete process;
-
-        QImage image(denoise_input_path);
-        QString denoise_path;
-
-        if (extensionImageIn == "ppm") {
-            QImage ppmImage = image.convertToFormat(QImage::Format_RGB32);
-            ppmImage.save("../denoise_pic.ppm");
-            denoise_path = "../denoise_pic.ppm";
-        }
-        else {
-            QImage pgmImage = image.convertToFormat(QImage::Format_Grayscale8);
-            pgmImage.save("../denoise_pic.pgm");
-            denoise_path = "../denoise_pic.pgm";
-        }
-
-        QString cheminNoisePic = "../noise_pic.png";
-        QFile::remove(cheminNoisePic);
-
-        QString cheminDenoisePic = "../denoise_pic.png";
-        QFile::remove(cheminDenoisePic);
-    }
 
     QPixmap image(denoise_path);
     if (!image.isNull()) {
         QPixmap scaledImage = image.scaled(ui->start_label->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
         ui->start_label->setPixmap(scaledImage);
+
+        qDebug() << "ecriture de denoise_pic avec succès : " << extensionImageIn;
     }
 }
 
@@ -548,8 +549,44 @@ void MainWindow::on_submit_button_metric_clicked() {
                 }
             }
         }
-        else if (!denoise_image.isNull()) {
 
+        if (!denoise_image.isNull()) {
+            if (currentImage == denoise_image) {
+                if (extensionImageIn == "pgm") {
+                    PSNR = calculPSNR_G((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString psnrText = "PSNR : " + QString::number(PSNR);
+                    ui->label_psnr->setText(psnrText);
+
+                    SNR = calculSNR_G((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString snrText = "SNR : " + QString::number(SNR);
+                    ui->label_snr->setText(snrText);
+
+                    SSIM = calculSSIM_G((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString ssimText = "SSIM : " + QString::number(SSIM);
+                    ui->label_ssim->setText(ssimText);
+
+                    RMSE = calculRMSE_G((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString rmseText = "RMSE : " + QString::number(RMSE);
+                    ui->label_rmse->setText(rmseText);
+                }
+                else if (extensionImageIn == "ppm") {
+                    PSNR = calculPSNR_RGB((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString psnrText = "PSNR : " + QString::number(PSNR);
+                    ui->label_psnr->setText(psnrText);
+
+                    SNR = calculSNR_RGB((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString snrText = "SNR : " + QString::number(SNR);
+                    ui->label_snr->setText(snrText);
+
+                    SSIM = calculSSIM_RGB((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString ssimText = "SSIM : " + QString::number(SSIM);
+                    ui->label_ssim->setText(ssimText);
+
+                    RMSE = calculRMSE_RGB((char*)init_path.toUtf8().constData(), (char*)denoise_path.toUtf8().constData());
+                    QString rmseText = "RMSE : " + QString::number(RMSE);
+                    ui->label_rmse->setText(rmseText);
+                }
+            }
         }
 
     }
