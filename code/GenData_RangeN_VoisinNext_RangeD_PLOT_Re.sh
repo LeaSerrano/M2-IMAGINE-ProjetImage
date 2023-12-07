@@ -35,6 +35,20 @@ PlotOther()
     NameArg=$2
     Range=$3
 
+     for c in 0 1 
+    do
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.05
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.07
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.10
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.15
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.20
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.25
+                    ./Plot $DB $N\_GRA voisins V type $c $NameArg 0.35
+
+        done
+
+        exit
+
     for mean in $mean_GAU
     do
         for var in $var_GAU
@@ -345,7 +359,7 @@ RunSpeckle()
     PlotOther SPE intens $Range_intens
 }
 
-PlotOther SPE intens $Range_intens
+PlotOther PES proport° $Range_intens
 
 if [ "$2" = "GAU" ]
 then
