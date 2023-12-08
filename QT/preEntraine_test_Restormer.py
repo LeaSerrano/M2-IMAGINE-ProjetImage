@@ -8,7 +8,7 @@ import os
 import sys
 
 def process_single_image(input_filepath, out_filepath):
-    isCudaAvailable = torch.cuda.is_available()
+    #isCudaAvailable = torch.cuda.is_available()
 
     def get_weights_and_parameters(task, parameters):
         if task == 'Real_Denoising':
@@ -24,10 +24,12 @@ def process_single_image(input_filepath, out_filepath):
     load_arch = run_path('/home/e20190003227/M2-IMAGINE/Image/HAI927-Projet_IMAGE/code/model/restormer_arch.py')
     model = load_arch['Restormer'](**parameters)
 
+    '''
     if isCudaAvailable:
         model.cuda()
     else:
         model.cpu()
+    '''
 
     # Load model weights
     checkpoint = torch.load(weights)
@@ -57,8 +59,8 @@ def process_single_image(input_filepath, out_filepath):
 
         cv2.imwrite(out_filepath, cv2.cvtColor(restored, cv2.COLOR_RGB2BGR))
 
-        if not isCudaAvailable:
-            del input_, restored
+        #if not isCudaAvailable:
+        del input_, restored
 
     return out_filepath  # Renvoie le nom du fichier traité
 
