@@ -55,6 +55,10 @@ int main(int argc, char* argv[])
     float Mean, Var;
     get_Mean_Var( vals, Mean, Var );
 
+    printf("%f %f\n", Mean, Var );
+
+    return 0;
+
     fprintf( fOut, "%f %f", Mean, Var );
 
     int nb_args = atoi( argv[3] );
@@ -69,3 +73,6 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+/*
+for i in GAU IMP PES POI SPE; do for j in 2.5 5 7.5 10 15 20 25 35; ./Mesure ./NN_Imgs/Img_N/$i\_$j\_lean.pgm ./NN_Imgs/TradImg_D/$i\_$j\_lean.pgm PSNR; done done
+*/
