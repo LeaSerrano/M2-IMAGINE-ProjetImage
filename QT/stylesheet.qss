@@ -1,6 +1,14 @@
 QMainWindow {
         background-color:#202124;
 }
+QFileDialog {
+    background-color:#202124;
+    color: #d3dae3;
+}
+QMessageBox {
+    background-color:#202124;
+    color: #d3dae3;
+}
 QPlainTextEdit {
         border-width: 2px;
         border-style: solid;

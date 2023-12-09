@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->statusbar->hide();
 
     setFixedSize(1106, 719);
 
@@ -37,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->algo_button_f3->setObjectName("algoButton");
     ui->metric_button_f2->setObjectName("metricButton");
     ui->metric_button_f3->setObjectName("metricButton");
+
+    ui->algo_button_f2->setStyleSheet("border-image: url(:/stylesheet/calculate_icon_gray.png) 0 0 0 0 stretch stretch;");
 
     ui->select_1_bruit->hide();
     ui->select_2_bruit->hide();
@@ -83,24 +86,28 @@ QString extensionImageIn;
 
 void MainWindow::on_submit_button_download_clicked()
 {
+    disconnect(ui->download_button, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
+
     QString filePath = QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), "", tr("Images (*.png *.jpg *.jpeg *.ppm *.pgm)"));
 
     if (!filePath.isEmpty()) {
         saveImage(filePath);
         QMessageBox::information(this, tr("Téléchargement terminé"), tr("L'image a été téléchargée avec succès."));
     } else {
-        // L'utilisateur a annulé la sélection du fichier
         QMessageBox::information(this, tr("Annulé"), tr("Le téléchargement a été annulé."));
     }
+
+    connect(ui->download_button, SIGNAL(clicked()), this, SLOT(on_submit_button_download_clicked()));
 }
+
+
+
 
 void MainWindow::saveImage(const QString &filePath)
 {
     QPixmap pixmap = ui->start_label->pixmap(Qt::ReturnByValue);
 
-    // Vérifiez si le QPixmap est valide
     if (!pixmap.isNull()) {
-        // Convertissez le QPixmap en QImage
         QImage image = pixmap.toImage();
 
         if (image.isNull()) {
